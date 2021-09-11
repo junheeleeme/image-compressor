@@ -1,19 +1,17 @@
-import React, { useState } from "react";
-import Layout from "../Layout/Layout";
-import styled from "styled-components";
-import DragDrop from "../common/DragDrop";
-import imageCompression from 'browser-image-compression';
+import React, { useState } from "react"
+import DragDrop from "../common/DragDrop"
+import imageCompression from 'browser-image-compression'
 
 const Compressor = () => {
 
     const InputHandler = async(e) => {
         const file = e;
-        
+
         if(file){
             const compressedImg = await compressImage(file);
             const downURL = URL.createObjectURL(compressedImg);
-            
             const downTag = document.createElement('a');
+
             downTag.download = 'save.jpg';
             downTag.href = downURL;
             downTag.click();
@@ -36,11 +34,7 @@ const Compressor = () => {
 
     return(
         <>
-            <Layout>
-            {/* <input type="file" accept="image/*" id="compressorInput" onChange={InputHandler}/> */}
-            {/* <img src={img} alt="" width="500" height="300" /> */}
                 <DragDrop InputHandler={InputHandler}/>
-            </Layout>
         </>
     )
 }

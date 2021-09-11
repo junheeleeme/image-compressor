@@ -1,17 +1,16 @@
 import React from 'react'
 import styled from 'styled-components';
 
-const LayoutStyled = styled.main`
+const MainStyled = styled.main`
     position: relative;
-
 `
 
-const Layout = ({children}) => {
+const Main = ({children}) => {
     return(
-        <LayoutStyled>
+        <MainStyled>
             {children}
-        </LayoutStyled>
+        </MainStyled>
     )
 }
 
-export default Layout;
+export default Main;
