@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import styled from "styled-components"
 import 'boxicons'
 import imageCompression from 'browser-image-compression'
-
+import JSZip from "jszip"
+import FileSaver from "file-saver"
 
 export default function Compressor(){
 
@@ -22,6 +23,13 @@ export default function Compressor(){
         // },
     ]);
 
+    useEffect(()=> {
+        console.log(imageLi);
+    }, [imageLi])
+    useEffect(()=> {
+        console.log('완료' +doneLi);
+    }, [doneLi])
+
     const dragArea = useRef(null);
 
     const preventDefaults = (e) => { //이벤트 방지
@@ -38,46 +46,70 @@ export default function Compressor(){
         dragArea.current.classList.remove('highlight');
     }
     const DropFile = (e) => { //드래그 드랍 파일
+        
         preventDefaults(e);
-        const file = e.dataTransfer.files;
-        if(!file[1]){
-            console.log(file[0]); //압축 전 이미지
-            setImageLi([{
-                title : file[0].name,
-                size : file[0].size,
-                type : file[0].type.substr(6, 5),
-            }])
-            InputHandler(file[0]);
-        }else{
-            //복수의 파일
-        }
         dragArea.current.classList.remove('highlight');
+
+        const files = e.dataTransfer.files;
+
+        if(!files[1]){ //한개의 파일이 들어 올 경우
+            // console.log(files[0]); //압축 전 이미지
+            setImageLi([{
+                title : files[0].name,
+                size : getfileSize(files[0].size),
+                type : files[0].type.substr(6, 5),
+            }]);
+            InputHandler(files[0]);
+        }else{ //여러 파일이 들어 올 경우
+            const fileList = [];
+            files.forEach(f=> {
+                fileList.push({
+                    title : f.name,
+                    size : getfileSize(f.size),
+                    type : f.type.substr(6, 5),
+                })
+            });
+            setImageLi(fileList); //전체 파일 리스트에 렌더링
+            InputHandler(files); //핸들러에 파일 리스트 전달
+        }
+        
     }
 
-    const InputHandler = async(e) => { //압축된 이미지 다운로드
-        const file = e;
-        if(file){
-            const compressedImg = await compressImage(file);
-            console.log(compressedImg) //압축 후 이미지
+    const InputHandler = async(file) => { //압축된 이미지 다운로드
+
+        if(!file[1]){ //파일이 하나일 경우
+            const res = await compressImage(file);
+            
             setDoneLi([
                 {
-                    title : compressedImg.name,
-                    type : compressedImg.type.substr(6, 5),
-                    size : compressedImg.size,
-                    link : URL.createObjectURL(compressedImg),
+                    title : res.name,
+                    type : res.type.substr(6, 5),
+                    size : getfileSize(res.size),
+                    link : URL.createObjectURL(res),
                 }
             ])
+        }else{ //파일이 여러개일 경우
             
-            // 자동 다운로드
+            const compressedItems = [];
+            const zipList = [];
+            for(let i=0 ; i < file.length ; i++){  //비동기로 복수의 이미지 압축 후 배열에 추가
+                const res = await compressImage(file[i]);
+                zipList.push(res);
+                compressedItems.push(
+                    {
+                        title : res.name,
+                        type : res.type.substr(6, 5),
+                        size : getfileSize(res.size),
+                        link : URL.createObjectURL(res),
+                    }
+                );
+            }
 
-            // const downURL = URL.createObjectURL(compressedImg);
-            // const downTag = document.createElement('a');
-            
-            // downTag.download = 'save.jpg'; 
-            // downTag.href = downURL;
-            // downTag.click();
-        }
+            setDoneLi(compressedItems);   
+            CreateZip(zipList);
+        }   
     }
+
     const compressImage = async(img) => { //이미지 압축
         try{
             const options = {
@@ -88,8 +120,31 @@ export default function Compressor(){
         } catch(e){ console.log(e); }
     }
 
+    const getfileSize = (x) => {
+        var s = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        var e = Math.floor(Math.log(x) / Math.log(1024));
+        return (x / Math.pow(1024, e)).toFixed(2) + " " + s[e];
+    };
+
+    const CreateZip = (imgs) => {
+
+        const zip = new JSZip();
+
+        imgs.forEach(img => {
+            zip.folder("webpp-images").file(img.name, img);
+        });
+        
+
+        zip.generateAsync({type:"blob"})
+        .then((content) => {
+            FileSaver(content, "webpp.zip");
+        });
+
+    }
+
     return(
         <>
+        <button onClick={CreateZip}>다운로드</button>
             <CompressorDrag>
                 <div className="drag-area" ref={dragArea} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
                 <div className="dragIcon" onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
@@ -104,15 +159,15 @@ export default function Compressor(){
                     <div className="left">
                         <ul>
                         <li style={{textAlign: 'center', fontSize: '15px' , fontWeight : 'bold'}}>
-                            <span style={{fontSize : '15px'}} className="img-no">No</span>
-                            <span style={{fontSize : '15px'}} className="img-title">File Name</span>
-                            <span style={{fontSize : '15px'}} className="img-size">File Size</span>
+                            <span style={{fontSize : '16px'}} className="img-no">No</span>
+                            <span style={{fontSize : '16px'}} className="img-title">Uploaded File Name</span>
+                            <span style={{fontSize : '16px'}} className="img-size">Size</span>
                         </li>
-                        {
+                        {   
                             imageLi.map((li, idx)=> 
                                 <li key={li.title + idx}>
                                     <span className="img-no">{idx+1}</span>
-                                    <span className="img-title">{li.title}</span>
+                                    <span className="img-title" title={li.title}>{li.title}</span>
                                     <span className="img-size">{li.size}</span>
                                 </li>
                             )
@@ -122,17 +177,22 @@ export default function Compressor(){
                     <div className="right">
                         <ul>
                             <ul>
-                            <li style={{textAlign: 'center', fontSize: '15px' , fontWeight : 'bold', padding: '5px'}}>Compressed Images</li>
-                                    {
-                                        doneLi.map((li, idx)=> 
-                                            <li key={li.title + idx}>
-                                                <span className="img-no-done">{idx+1}</span>
-                                                <span className="img-title-done">{li.title}</span>
-                                                <span className="img-size-done">{li.size}</span>   
-                                                <span className="img-down-done"><a href={li.link} download={li.title}><box-icon type='solid' name='cloud-download'/></a></span>
-                                            </li>
-                                        )
-                                    }
+                                <li style={{textAlign: 'center', fontWeight : 'bold'}}>
+                                    <span style={{fontSize : '16px'}} className="img-no-done">No</span>
+                                    <span style={{fontSize : '16px'}} className="img-title-done">Compressed File Name</span>
+                                    <span style={{fontSize : '16px'}} className="img-size-done">Size</span>
+                                    <span style={{fontSize : '16px', padding : '7px'}} className="img-down-done">D</span>
+                                </li>
+                                {  
+                                    doneLi.map((li, idx)=> 
+                                        <li key={li.title + idx}>
+                                            <span className="img-no-done">{idx+1}</span>
+                                            <span className="img-title-done" title={li.title}>{li.title}</span>
+                                            <span className="img-size-done">{li.size}</span>   
+                                            <span className="img-down-done"><a href={li.link} download={li.title}><box-icon type='solid' name='cloud-download'/></a></span>
+                                        </li>
+                                    )
+                                }
                             </ul>
                         </ul>
                     </div>                    
@@ -146,10 +206,10 @@ const CompressorDrag = styled.section`
     position: relative; height: 300px;
 & .drag-area{
     position: absolute; width: 100%; height: 100%; z-index: 99;
-    border: 1px dashed #c0c0c0; border-bottom: none; 
+    border: 1px dashed #6d6a6a; border-bottom: none; 
     border-top-left-radius: 10px; 
     border-top-right-radius: 10px; 
-    background-color: rgba(0,0,0, 0.2); transition: .3s ease;
+    background-color: rgba(0,0,0, 0.2); transition: .2s ease;
 }
 & .highlight{ border: 1px dashed #fff; background-color: rgba(0,0,0, 0.5); }
 & .dragIcon{ 
@@ -177,23 +237,27 @@ const CompressorList = styled.section`
             width: 100%; height: 100%; background-color: #fff;
             & li{ 
                 position: relative; display: block;  border-bottom: 1px solid #c7c7c7;
-                & span{ display:inline-block; font-size: 13px; padding: 5px; vertical-align: top;}
-                & .img-no{ width: 10%; text-align: center; border-right: 1px solid #c7c7c7; }
-                & .img-title{ width: 70%; padding: 5px 0 5px 10px; border-right: 1px solid #c7c7c7; 
+                line-height: 1;
+                & span{ display:inline-block; font-size: 15px; padding: 7px; vertical-align: top;}
+                & .img-no{ width: 40px; text-align: center; border-right: 1px solid #c7c7c7; }
+                & .img-title{ width: calc(80% - 40px); padding: 7px; border-right: 1px solid #c7c7c7; 
                     text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
                 & .img-size{ width: 20%; text-align: center; }
-                & .img-no-done{ width: 10%; text-align: center; border-right: 1px solid #c7c7c7; }
-                & .img-title-done{ width: calc(70% - 30px); padding: 5px 0 5px 10px; border-right: 1px solid #c7c7c7; 
+                & .img-no-done{ width: 40px; text-align: center; border-right: 1px solid #c7c7c7; }
+                & .img-title-done{ width: calc(80% - 80px); border-right: 1px solid #c7c7c7; 
                     text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
                 & .img-size-done{ width: 20%; text-align: center; border-right: 1px solid #c7c7c7; }
                 & .img-down-done{ 
-                    width: 30px; height: 100%; text-align: center; padding: 0;
+                    width: 40px; height: 100%; text-align: center; display: inline-block; padding: 0;
+                    vertical-align: bottom;
                     & a{ 
-                        display: inline-block; width: 100%; height: 100%;
-                        & box-icon{ width: 22px; height: 22px;}
+                        display: inline-block; width: 100%; height: 100%; position: relative; vertical-align: middle;
+                        & box-icon{ display:inline-block; width: 100%; }
                     }
                 }
             }
         }
+        & .right ul>li:first-child{ animation: none; }
+        & .right li{ animation: done 1s; }
     }
 `
