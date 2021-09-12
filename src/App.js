@@ -7,7 +7,7 @@ import Compressor from './pages/Compressor';
 
 const AppStyled = styled.div`
   position: relative;
-  max-width: 1080px;
+  max-width: 900px;
   min-height: 100vh;
 `
 

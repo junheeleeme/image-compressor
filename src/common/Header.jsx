@@ -9,8 +9,7 @@ const HeaderStyled = styled.header`
     position: absolute; top: 52%; left: 20px; transform: translate(0, -50%);
     font-size: 25px; color: #fff; transition: .3s ease; cursor: pointer;
     &:hover{ color: #EDFFA9; }
-}
-`
+}`
 
 
 const Header = () => {
