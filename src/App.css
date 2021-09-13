@@ -1,6 +1,7 @@
 *{
     box-sizing: border-box;
     margin: 0 auto;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 a{ text-decoration: none; color: #000; }
@@ -40,5 +41,14 @@ background: linear-gradient(to right, #ec2F4B, #009FFF); /* W3C, IE 10+/ Edge, F
     }
     100%{
         transform: rotate(0deg);
+    }
+}
+
+@keyframes slideUp {
+    from{
+        bottom: -100px;
+    }
+    to{
+        bottom: 5px;
     }
 }
