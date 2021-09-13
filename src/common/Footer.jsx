@@ -12,8 +12,8 @@ const SpanStyled = styled.span`
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
-    font-size: 14px;
-    color: #a7a7a7;
+    font-size: 13px;
+    color: #fff;
 @media screen and (max-width: 486px){ font-size: 12px; }
 `
 

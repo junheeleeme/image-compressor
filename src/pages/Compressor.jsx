@@ -22,18 +22,16 @@ export default function Compressor(){
         //     link : '',
         // },
     ]);
+    const [blobImg, setBlobImg] = useState([]);
     const [isAllDown, setIsAllDown] = useState(false);
     const inputEle = useRef(null);
     const dragArea = useRef(null);
     const Alldown = useRef(null);
 
     useEffect(()=> { 
-        console.log(imageLi); 
+        // console.log(imageLi); 
         setIsAllDown(false);
-        setDoneLi([]);
     }, [imageLi]);
-
-    useEffect(()=> { console.log('완료' +doneLi); }, [doneLi])
 
     const preventDefaults = (e) => { //이벤트 방지
         e.preventDefault();
@@ -48,93 +46,79 @@ export default function Compressor(){
         preventDefaults(e);
         dragArea.current.classList.remove('highlight');
     }
+    
     const DropFile = (e) => { //드래그 드랍 파일
         
         preventDefaults(e);
         dragArea.current.classList.remove('highlight');
 
         const files = e.dataTransfer.files;
+        const fileList = [];
 
-        if(!files[1]){ //한개의 파일이 들어 올 경우
-            // console.log(files[0]); //압축 전 이미지
-            setImageLi([{
-                title : files[0].name,
-                size : getfileSize(files[0].size),
-                type : files[0].type.substr(6, 5),
-            }]);
-            InputHandler(files[0]);
-        }else{ //여러 파일이 들어 올 경우
-            const fileList = [];
-            files.forEach(f=> {
-                fileList.push({
-                    title : f.name,
-                    size : getfileSize(f.size),
-                    type : f.type.substr(6, 5),
-                })
-            });
-            setImageLi(fileList); //전체 파일 리스트에 렌더링
-            InputHandler(files); //핸들러에 파일 리스트 전달
-        }
-        
+        files.forEach(f=> {
+            fileList.push({
+                title : f.name,
+                size : getfileSize(f.size),
+                type : f.type.substr(6, 5),
+            })
+        });
+        setImageLi([
+            ...imageLi,
+            ...fileList
+        ]); //전체 파일 리스트에 렌더링
+
+        InputHandler(files);        
     }
 
     const onChangeInput = (e) => { 
+        
         const files = e.target.files;
-        if(!files[1]){ //파일이 1개일 경우
-            setImageLi([{
-                title : files[0].name,
-                size : getfileSize(files[0].size),
-                type : files[0].type.substr(6, 5),
-            }]);
-            InputHandler(files[0]);
-        }else{ //파일이 여러개일 경우
-            const fileList = [];
-            files.forEach(f=> {
-                fileList.push({
-                    title : f.name,
-                    size : getfileSize(f.size),
-                    type : f.type.substr(6, 5),
-                })
-            });
-            setImageLi(fileList); //전체 파일 리스트에 렌더링
-            InputHandler(files); //핸들러에 파일 리스트 전달
-        }
+        const fileList = [];
+
+        files.forEach(f=> {
+            fileList.push({
+                title : f.name,
+                size : getfileSize(f.size),
+                type : f.type.substr(6, 5),
+            })
+        });
+        setImageLi([
+            ...imageLi,
+            ...fileList
+        ]); //전체 파일 리스트에 렌더링
+
+        InputHandler(files);        
+
     }
 
     const InputHandler = async(file) => { //압축된 이미지 다운로드
 
-        if(!file[1]){ //파일이 하나일 경우
-            const res = await compressImage(file);
+        const compressedItems = [];
+        const imgData = []; //압축을 위해 원본을 다른 배열에 저장
+
+        for(let i=0 ; i < file.length ; i++){  //비동기로 복수의 이미지 압축 후 배열에 추가
+            const res = await compressImage(file[i]);
             const type = res.type.substr(6, 5); //이미지 확장자
-            setDoneLi([
+            imgData.push(res); 
+            compressedItems.push( 
                 {
                     title : res.name.slice(0, -type.length) + '_webpp.' + type, //압축 후 이미지 파일명 변경
                     type : type,
                     size : getfileSize(res.size),
                     link : URL.createObjectURL(res),
                 }
-            ])
-        }else{ //파일이 여러개일 경우
-            
-            const compressedItems = [];
-            const zipList = [];
-            for(let i=0 ; i < file.length ; i++){  //비동기로 복수의 이미지 압축 후 배열에 추가
-                const res = await compressImage(file[i]);
-                const type = res.type.substr(6, 5); //이미지 확장자
-                
-                zipList.push(res); //압축을 위해 다른 배열에 저장
-                compressedItems.push( 
-                    {
-                        title : res.name.slice(0, -type.length) + '_webpp.' + type, //압축 후 이미지 파일명 변경
-                        type : type,
-                        size : getfileSize(res.size),
-                        link : URL.createObjectURL(res),
-                    }
-                );
-            }
-            CreateZip(zipList);
-            setDoneLi(compressedItems);  
-        }   
+            );
+        }
+        setBlobImg([
+            ...blobImg,
+            ...imgData
+        ])
+        setDoneLi([
+            ...doneLi,
+            ...compressedItems
+        ]);
+        setIsAllDown(true); // 이미지 압축 완료 후 전체 다운로드 버튼 렌더링
+
     }
 
     const compressImage = async(img) => { //이미지 압축
@@ -153,17 +137,20 @@ export default function Compressor(){
         return (x / Math.pow(1024, e)).toFixed(2) + " " + s[e];
     };
 
-    const CreateZip = (imgs) => { //압축 만들기
+    const CreateZip = () => { //이미지 압축파일 만들기
         const zip = new JSZip();
-        imgs.forEach(img => {
-            zip.folder("webpp-images").file(img.name, img);
+        blobImg.forEach(blob => {
+            zip.folder("webpp").file(blob.name, blob);
         });
         zip.generateAsync({type:"blob"})
         .then((imgs) => {
-            Alldown.current.download = 'webpp.zip';  // 다운로드 zip파일 이름
-            Alldown.current.href = URL.createObjectURL(imgs);
-            setIsAllDown(true);
+            FileSaver(imgs, "webpp.zip");    
         });
+    }
+
+    const clickInput = (e) => {
+        preventDefaults(e);
+        inputEle.current.click();
     }
 
     return(
@@ -171,8 +158,8 @@ export default function Compressor(){
         <input ref={inputEle} type="file" id="fileInput" accept="image/*" style={{display: 'none'}} multiple onChange={onChangeInput}/>
         <CompressorWrap>
             <CompressorDrag>
-                <div className="drag-area" ref={dragArea} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
-                <div className="dragIcon" onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
+                <div className="drag-area" ref={dragArea} onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
+                <div className="dragIcon" onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
                         <box-icon name='image' type='solid' color='#ffffff' />
                         <p className="choose"><label htmlFor="fileInput">Choose Files</label></p>
                         <p className="ImgEx2">&#38;</p>
@@ -183,7 +170,7 @@ export default function Compressor(){
                 <div className="list-area">
                     <div className="left">
                         <ul>
-                        <li style={{textAlign: 'center', fontSize: '15px'}}>
+                        <li style={{textAlign: 'center', fontSize: '15px', background : 'rgba(0,0,0,0.05)'  }}>
                             <span style={{fontSize : '15px'}} className="img-no">No</span>
                             <span style={{fontSize : '15px'}} className="img-title">Uploaded File Name</span>
                             <span style={{fontSize : '15px'}} className="img-size">Size</span>
@@ -201,7 +188,7 @@ export default function Compressor(){
                     </div>
                     <div className="right">
                         <ul>
-                            <li style={{textAlign: 'center'}}>
+                            <li style={{textAlign: 'center', background : 'rgba(0,0,0,0.05)'}}>
                                 <span style={{fontSize : '15px'}} className="img-no-done">No</span>
                                 <span style={{fontSize : '15px'}} className="img-title-done">Compressed File Name</span>
                                 <span style={{fontSize : '15px'}} className="img-size-done">Size</span>
@@ -221,9 +208,9 @@ export default function Compressor(){
                         {
                             !isAllDown
                                 ?
-                            <a ref={Alldown} href='/' className="AllDown" style={{display: 'none'}}>전체 다운로드</a>
+                            <></>
                                 : 
-                            <a ref={Alldown} href='/' className="AllDown">전체 다운로드</a>
+                            <button ref={Alldown} onClick={CreateZip} className="AllDown">전체 다운로드</button>
                         }
                         
                     </div>                    
@@ -241,7 +228,7 @@ const CompressorWrap = styled.div`
 const CompressorDrag = styled.section`
     position: relative; height: 300px;
 & .drag-area{
-    position: absolute; width: 100%; height: 100%; z-index: 99;
+    position: absolute; width: 100%; height: 100%; z-index: 99; cursor: pointer;
     border: 1px dashed #6d6a6a; border-bottom: none; 
     border-top-left-radius: 10px; 
     border-top-right-radius: 10px; 
@@ -249,13 +236,13 @@ const CompressorDrag = styled.section`
 }
 & .highlight{ border: 1px dashed #fff; background-color: rgba(0,0,0, 0.5); }
 & .dragIcon{ 
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1) rotate(0deg); z-index: 100;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1) rotate(0deg); z-index: 100; cursor: pointer;
     transition: .3s ease;
     & box-icon{ display: block; width: 80px; height: 80px; margin: 0 auto 10px auto; }
     & p{ color: #fff; text-align: center; }
-    & .choose{ position: relative; margin: 0 20px;  background-color: rgba(0,0,0,0.3); color: #fff;  border-radius: 5px; transition: 0.3s ease; }
+    & .choose{ position: relative; margin: 0 20px;  background-color: rgba(0,0,0,0.3); color: #fff;  border-radius: 5px; transition: 0.3s ease; cursor: pointer; }
     & .choose:hover{ background-color: rgba(255,255,255, 1); color: #000; }
-    & .choose label{ display: inline-block; width: 100%; height: 100%; margin: 5px 0; font-size: 16px;  cursor: pointer; }
+    & .choose label{ display: inline-block; width: 100%; height: 100%; padding: 5px 0; font-size: 16px;  cursor: pointer; }
     & .ImgEx2{ font-size: 15px; color: #fff; margin: 2px 0; }
     & .ImgEx3{ font-size: 18px; font-weight: bold; }
 }
@@ -277,7 +264,7 @@ const CompressorList = styled.section`
         }
         & .left{ border-right: 1px solid #c7c7c7; }
         @media screen and (max-width: 600px){
-            .left, .right{ width: 100%; height:150px; }
+            .left, .right{ width: 100%; height: 150px; }
         }
         & ul{
             width: 100%; height: 100%; background-color: #fff; overflow: auto;
@@ -313,9 +300,8 @@ const CompressorList = styled.section`
         & .right li{ animation: done 1s; }
         & .right .AllDown{ 
             position: absolute; bottom: -100px; left: 50%; transform: translate(-50%, 0);
-            padding: 5px 20px; background-color: rgba(0,0,0, 0.6); border-radius: 7px; color: #fff;
-            font-size: 14px;
-            animation: slideUp 1s forwards;
+            padding: 5px 20px; background-color: #414141; border-radius: 7px; color: #fff; border: none;
+            font-size: 14px; cursor: pointer; animation: slideUp 1s forwards;
         }
     }
 `
