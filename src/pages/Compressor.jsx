@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import styled from "styled-components"
+import Loader from "../common/Loader"
 import 'boxicons'
 import imageCompression from 'browser-image-compression'
 import JSZip from "jszip"
@@ -22,6 +23,7 @@ export default function Compressor(){
         //     link : '',
         // },
     ]);
+    const [isLoad, setIsLoad] = useState(false);
     const [blobImg, setBlobImg] = useState([]);
     const [isAllDown, setIsAllDown] = useState(false);
     const inputEle = useRef(null);
@@ -48,7 +50,7 @@ export default function Compressor(){
     }
     
     const DropFile = (e) => { //드래그 드랍 파일
-        
+        setIsLoad(true);
         preventDefaults(e);
         dragArea.current.classList.remove('highlight');
 
@@ -71,7 +73,7 @@ export default function Compressor(){
     }
 
     const onChangeInput = (e) => { 
-        
+        setIsLoad(true);
         const files = e.target.files;
         const fileList = [];
 
@@ -117,6 +119,7 @@ export default function Compressor(){
             ...doneLi,
             ...compressedItems
         ]);
+        setIsLoad(false);
         setIsAllDown(true); // 이미지 압축 완료 후 전체 다운로드 버튼 렌더링
 
     }
@@ -155,6 +158,12 @@ export default function Compressor(){
 
     return(
         <>
+        {
+            !isLoad
+                ?
+            <></> : <Loader/>
+        }
+        
         <input ref={inputEle} type="file" id="fileInput" accept="image/*" style={{display: 'none'}} multiple onChange={onChangeInput}/>
         <CompressorWrap>
             <CompressorDrag>
@@ -223,15 +232,15 @@ export default function Compressor(){
 
 const CompressorWrap = styled.div`
     width: 100%;
-    &:hover div:first-child{ background-color: rgba(0,0,0, 0.35); }
 `
 const CompressorDrag = styled.section`
     position: relative; height: 300px;
+    &:hover div:first-child{ background-color: rgba(0,0,0, 0.35); }
 & .drag-area{
     position: absolute; width: 100%; height: 100%; z-index: 99; cursor: pointer;
     border: 1px dashed #6d6a6a; border-bottom: none; 
     border-top-left-radius: 10px; border-top-right-radius: 10px;     
-    background-color: rgba(0,0,0, 0.2); transition: .2s ease;
+    background-color: rgba(0,0,0, 0.2); transition: .33s ease;
 }
 & .highlight{ border: 1px dashed #fff; background-color: rgba(0,0,0, 0.5); }
 & .dragIcon{ 
@@ -239,9 +248,9 @@ const CompressorDrag = styled.section`
     transition: .3s ease;
     & box-icon{ display: block; width: 80px; height: 80px; margin: 0 auto 10px auto; }
     & p{ color: #fff; text-align: center; }
-    & .choose{ position: relative; margin: 0 20px;  background-color: rgba(0,0,0,0.3); color: #fff;  border-radius: 5px; transition: 0.3s ease; cursor: pointer; }
+    & .choose{ position: relative; margin: 0 20px;  background-color: rgba(0,0,0,0.4); color: #fff;  border-radius: 5px; transition: 0.55s ease; cursor: pointer; }
     & .choose:hover{ background-color: rgba(255,255,255, 1); color: #000; }
-    & .choose label{ display: inline-block; width: 100%; height: 100%; padding: 5px 0; font-size: 16px;  cursor: pointer; }
+    & .choose label{ display: inline-block; width: 100%; height: 100%; padding: 7px 0; font-size: 16px;  cursor: pointer; }
     & .ImgEx2{ font-size: 15px; color: #fff; margin: 2px 0; }
     & .ImgEx3{ font-size: 18px; font-weight: bold; }
 }
@@ -272,13 +281,13 @@ const CompressorList = styled.section`
                 line-height: 1;
                 & span{ display:inline-block; font-size: 14px; padding: 7px; vertical-align: top;}
                 & .img-no{ width: 40px; text-align: center; border-right: 1px solid #c7c7c7; }
-                & .img-title{ width: calc(80% - 40px); padding: 7px; border-right: 1px solid #c7c7c7; 
+                & .img-title{ width: calc(75% - 40px); padding: 7px; border-right: 1px solid #c7c7c7; 
                     text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-                & .img-size{ width: 20%; text-align: center; }
+                & .img-size{ width: 25%; text-align: center; }
                 & .img-no-done{ width: 40px; text-align: center; border-right: 1px solid #c7c7c7; }
-                & .img-title-done{ width: calc(80% - 80px); border-right: 1px solid #c7c7c7; 
+                & .img-title-done{ width: calc(75% - 80px); border-right: 1px solid #c7c7c7; 
                     text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-                & .img-size-done{ width: 20%; text-align: center; border-right: 1px solid #c7c7c7; }
+                & .img-size-done{ width: 25%; text-align: center; border-right: 1px solid #c7c7c7; }
                 & .img-down-done{ 
                     width: 40px; height: 100%; text-align: center; display: inline-block; padding: 0;
                     vertical-align: bottom;
@@ -291,7 +300,6 @@ const CompressorList = styled.section`
         }
         & .right ul>li:first-child{ animation: none; }
         & .right ul{
-
             @media screen and (max-width: 600px){
                 border-top: 1px solid #9f9f9f;
             }
