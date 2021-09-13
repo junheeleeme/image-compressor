@@ -223,15 +223,14 @@ export default function Compressor(){
 
 const CompressorWrap = styled.div`
     width: 100%;
+    &:hover div:first-child{ background-color: rgba(0,0,0, 0.35); }
 `
-
 const CompressorDrag = styled.section`
     position: relative; height: 300px;
 & .drag-area{
     position: absolute; width: 100%; height: 100%; z-index: 99; cursor: pointer;
     border: 1px dashed #6d6a6a; border-bottom: none; 
-    border-top-left-radius: 10px; 
-    border-top-right-radius: 10px; 
+    border-top-left-radius: 10px; border-top-right-radius: 10px;     
     background-color: rgba(0,0,0, 0.2); transition: .2s ease;
 }
 & .highlight{ border: 1px dashed #fff; background-color: rgba(0,0,0, 0.5); }
@@ -271,7 +270,7 @@ const CompressorList = styled.section`
             & li{ 
                 position: relative; display: block;  border-bottom: 1px solid #c7c7c7;
                 line-height: 1;
-                & span{ display:inline-block; font-size: 15px; padding: 7px; vertical-align: top;}
+                & span{ display:inline-block; font-size: 14px; padding: 7px; vertical-align: top;}
                 & .img-no{ width: 40px; text-align: center; border-right: 1px solid #c7c7c7; }
                 & .img-title{ width: calc(80% - 40px); padding: 7px; border-right: 1px solid #c7c7c7; 
                     text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
