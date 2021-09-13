@@ -23,6 +23,7 @@ export default function Compressor(){
         // },
     ]);
     const [isAllDown, setIsAllDown] = useState(false);
+    const inputEle = useRef(null);
     const dragArea = useRef(null);
     const Alldown = useRef(null);
 
@@ -72,10 +73,32 @@ export default function Compressor(){
                 })
             });
             setImageLi(fileList); //전체 파일 리스트에 렌더링
-            
             InputHandler(files); //핸들러에 파일 리스트 전달
         }
         
+    }
+
+    const onChangeInput = (e) => { 
+        const files = e.target.files;
+        if(!files[1]){ //파일이 1개일 경우
+            setImageLi([{
+                title : files[0].name,
+                size : getfileSize(files[0].size),
+                type : files[0].type.substr(6, 5),
+            }]);
+            InputHandler(files[0]);
+        }else{ //파일이 여러개일 경우
+            const fileList = [];
+            files.forEach(f=> {
+                fileList.push({
+                    title : f.name,
+                    size : getfileSize(f.size),
+                    type : f.type.substr(6, 5),
+                })
+            });
+            setImageLi(fileList); //전체 파일 리스트에 렌더링
+            InputHandler(files); //핸들러에 파일 리스트 전달
+        }
     }
 
     const InputHandler = async(file) => { //압축된 이미지 다운로드
@@ -145,68 +168,75 @@ export default function Compressor(){
 
     return(
         <>
-        <CompressorDrag>
-            <div className="drag-area" ref={dragArea} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
-            <div className="dragIcon" onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
-                    <box-icon name='image' type='solid' color='#ffffff' />
-                    <p className="ImgEx1">Select Image File</p>
-                    <p className="ImgEx2">&#38;</p>
-                    <p className="ImgEx3">Drag &#38; Drop Your Images</p>
-            </div>
-        </CompressorDrag>
-        <CompressorList>
-            <div className="list-area">
-                <div className="left">
-                    <ul>
-                    <li style={{textAlign: 'center', fontSize: '15px'}}>
-                        <span style={{fontSize : '15px'}} className="img-no">No</span>
-                        <span style={{fontSize : '15px'}} className="img-title">Uploaded File Name</span>
-                        <span style={{fontSize : '15px'}} className="img-size">Size</span>
-                    </li>
-                    {   
-                        imageLi.map((li, idx)=> 
-                            <li key={li.title + idx}>
-                                <span className="img-no">{idx+1}</span>
-                                <span className="img-title" title={li.title}>{li.title}</span>
-                                <span className="img-size">{li.size}</span>
-                            </li>
-                        )
-                    }
-                    </ul>
+        <input ref={inputEle} type="file" id="fileInput" accept="image/*" style={{display: 'none'}} multiple onChange={onChangeInput}/>
+        <CompressorWrap>
+            <CompressorDrag>
+                <div className="drag-area" ref={dragArea} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
+                <div className="dragIcon" onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
+                        <box-icon name='image' type='solid' color='#ffffff' />
+                        <p className="choose"><label htmlFor="fileInput">Choose Files</label></p>
+                        <p className="ImgEx2">&#38;</p>
+                        <p className="ImgEx3">Drag &#38; Drop Your Images</p>
                 </div>
-                <div className="right">
-                    <ul>
-                        <li style={{textAlign: 'center'}}>
-                            <span style={{fontSize : '15px'}} className="img-no-done">No</span>
-                            <span style={{fontSize : '15px'}} className="img-title-done">Compressed File Name</span>
-                            <span style={{fontSize : '15px'}} className="img-size-done">Size</span>
-                            <span style={{fontSize : '15px', padding : '7px'}} title="Download" className="img-down-done">D</span>
+            </CompressorDrag>
+            <CompressorList>
+                <div className="list-area">
+                    <div className="left">
+                        <ul>
+                        <li style={{textAlign: 'center', fontSize: '15px'}}>
+                            <span style={{fontSize : '15px'}} className="img-no">No</span>
+                            <span style={{fontSize : '15px'}} className="img-title">Uploaded File Name</span>
+                            <span style={{fontSize : '15px'}} className="img-size">Size</span>
                         </li>
-                        {  
-                            doneLi.map((li, idx)=> 
+                        {   
+                            imageLi.map((li, idx)=> 
                                 <li key={li.title + idx}>
-                                    <span className="img-no-done">{idx+1}</span>
-                                    <span className="img-title-done" title={li.title}>{li.title}</span>
-                                    <span className="img-size-done">{li.size}</span>   
-                                    <span className="img-down-done"><a href={li.link} download={li.title}><box-icon type='solid' name='cloud-download'/></a></span>
+                                    <span className="img-no">{idx+1}</span>
+                                    <span className="img-title" title={li.title}>{li.title}</span>
+                                    <span className="img-size">{li.size}</span>
                                 </li>
                             )
                         }
-                    </ul>
-                    {
-                        !isAllDown
-                            ?
-                        <a ref={Alldown} href='/' className="AllDown" style={{display: 'none'}}>전체 다운로드</a>
-                            : 
-                        <a ref={Alldown} href='/' className="AllDown">전체 다운로드</a>
-                    }
-                    
-                </div>                    
-            </div>
-        </CompressorList>
+                        </ul>
+                    </div>
+                    <div className="right">
+                        <ul>
+                            <li style={{textAlign: 'center'}}>
+                                <span style={{fontSize : '15px'}} className="img-no-done">No</span>
+                                <span style={{fontSize : '15px'}} className="img-title-done">Compressed File Name</span>
+                                <span style={{fontSize : '15px'}} className="img-size-done">Size</span>
+                                <span style={{fontSize : '15px', padding : '7px'}} title="Download" className="img-down-done">D</span>
+                            </li>
+                            {  
+                                doneLi.map((li, idx)=> 
+                                    <li key={li.title + idx}>
+                                        <span className="img-no-done">{idx+1}</span>
+                                        <span className="img-title-done" title={li.title}>{li.title}</span>
+                                        <span className="img-size-done">{li.size}</span>   
+                                        <span className="img-down-done"><a href={li.link} download={li.title}><box-icon type='solid' name='cloud-download'/></a></span>
+                                    </li>
+                                )
+                            }
+                        </ul>
+                        {
+                            !isAllDown
+                                ?
+                            <a ref={Alldown} href='/' className="AllDown" style={{display: 'none'}}>전체 다운로드</a>
+                                : 
+                            <a ref={Alldown} href='/' className="AllDown">전체 다운로드</a>
+                        }
+                        
+                    </div>                    
+                </div>
+            </CompressorList>
+        </CompressorWrap>
         </>
     )
 }
+
+const CompressorWrap = styled.div`
+    width: 100%;
+`
 
 const CompressorDrag = styled.section`
     position: relative; height: 300px;
@@ -223,8 +253,11 @@ const CompressorDrag = styled.section`
     transition: .3s ease;
     & box-icon{ display: block; width: 80px; height: 80px; margin: 0 auto 10px auto; }
     & p{ color: #fff; text-align: center; }
-    & .ImgEx1, .ImgEx3{ font-size: 18px; font-weight: bold; }
-    & .ImgEx2{ font-size: 15px; color: #fff; line-height: 1.2; }
+    & .choose{ position: relative; margin: 0 20px;  background-color: rgba(0,0,0,0.3); color: #fff;  border-radius: 5px; transition: 0.3s ease; }
+    & .choose:hover{ background-color: rgba(255,255,255, 1); color: #000; }
+    & .choose label{ display: inline-block; width: 100%; height: 100%; margin: 5px 0; font-size: 16px;  cursor: pointer; }
+    & .ImgEx2{ font-size: 15px; color: #fff; margin: 2px 0; }
+    & .ImgEx3{ font-size: 18px; font-weight: bold; }
 }
 & .highlight ~ .dragIcon { transform: translate(-50%, -50%) scale(1.15) rotate(5deg);  }`
 
@@ -280,7 +313,7 @@ const CompressorList = styled.section`
         & .right li{ animation: done 1s; }
         & .right .AllDown{ 
             position: absolute; bottom: -100px; left: 50%; transform: translate(-50%, 0);
-            padding: 5px 20px; background-color: rgba(0,0,0, 0.4); border-radius: 7px; color: #fff;
+            padding: 5px 20px; background-color: rgba(0,0,0, 0.6); border-radius: 7px; color: #fff;
             font-size: 14px;
             animation: slideUp 1s forwards;
         }

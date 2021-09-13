@@ -4,7 +4,10 @@ import styled from 'styled-components';
 const MainStyled = styled.main`
     position: relative; display: block;
     min-height: calc(100vh - 120px);
-    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
 `
 
 const Main = ({children}) => {
