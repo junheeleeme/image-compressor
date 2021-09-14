@@ -16,7 +16,7 @@ const Header = () => {
     return(
         <>
         <HeaderStyled>
-            <h1>WebPP</h1>
+            <h1>Tiny Image</h1>
         </HeaderStyled>
         </>
     )

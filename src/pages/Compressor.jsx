@@ -3,6 +3,7 @@ import styled from "styled-components"
 import Loader from "../common/Loader"
 import 'boxicons'
 import imageCompression from 'browser-image-compression'
+import Alert from "../common/Alert"
 import JSZip from "jszip"
 import FileSaver from "file-saver"
 
@@ -28,7 +29,7 @@ export default function Compressor(){
     const [isAllDown, setIsAllDown] = useState(false);
     const inputEle = useRef(null);
     const dragArea = useRef(null);
-    const Alldown = useRef(null);
+    const alldownBtn = useRef(null);
 
     useEffect(()=> { 
         // console.log(imageLi); 
@@ -140,7 +141,7 @@ export default function Compressor(){
         return (x / Math.pow(1024, e)).toFixed(2) + " " + s[e];
     };
 
-    const CreateZip = () => { //이미지 압축파일 만들기
+    const AllDownload = () => { //이미지 압축파일 만들기
         const zip = new JSZip();
         blobImg.forEach(blob => {
             zip.folder("webpp").file(blob.name, blob);
@@ -156,6 +157,13 @@ export default function Compressor(){
         inputEle.current.click();
     }
 
+    const AllClear = () => {
+        setImageLi([]);
+        setDoneLi([]);
+        setBlobImg([]);
+        setIsAllDown(false);
+    }
+
     return(
         <>
         {
@@ -163,7 +171,7 @@ export default function Compressor(){
                 ?
             <></> : <Loader/>
         }
-        
+        <Alert/>
         <input ref={inputEle} type="file" id="fileInput" accept="image/*" style={{display: 'none'}} multiple onChange={onChangeInput}/>
         <CompressorWrap>
             <CompressorDrag>
@@ -219,7 +227,10 @@ export default function Compressor(){
                                 ?
                             <></>
                                 : 
-                            <button ref={Alldown} onClick={CreateZip} className="AllDown">전체 다운로드</button>
+                            <div className="done-btn-Wrap">
+                                <button onClick={AllClear} className="allclearBtn">전체 지우기</button>
+                                <button ref={alldownBtn} onClick={AllDownload} className="alldownBtn">전체 다운로드</button>
+                            </div>
                         }
                         
                     </div>                    
@@ -254,7 +265,7 @@ const CompressorDrag = styled.section`
     & .ImgEx2{ font-size: 15px; color: #fff; margin: 2px 0; }
     & .ImgEx3{ font-size: 18px; font-weight: bold; }
 }
-& .highlight ~ .dragIcon { transform: translate(-50%, -50%) scale(1.15) rotate(5deg);  }`
+& .highlight ~ .dragIcon { transform: translate(-50%, -50%) scale(1.15) rotate(10deg); }`
 
 const CompressorList = styled.section`
     position: relative; height: 300px;
@@ -305,10 +316,13 @@ const CompressorList = styled.section`
             }
         }
         & .right li{ animation: done 1s; }
-        & .right .AllDown{ 
-            position: absolute; bottom: -100px; left: 50%; transform: translate(-50%, 0);
-            padding: 5px 20px; background-color: #414141; border-radius: 7px; color: #fff; border: none;
-            font-size: 14px; cursor: pointer; animation: slideUp 1s forwards;
+        & .right .done-btn-Wrap { 
+            position: absolute; bottom: -100px; left: 0; width: 100%;
+            animation: slideUp 1s forwards; text-align : center;
+        }
+        & .right .done-btn-Wrap button{ 
+            cursor: pointer;font-size: 14px;  padding: 5px 15px; margin: 0 10px;
+            background-color:rgba(0,0,0,0.5); border-radius: 7px; color: #fff; border: none;
         }
     }
 `
