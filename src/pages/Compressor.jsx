@@ -51,13 +51,26 @@ export default function Compressor(){
     }
     
     const DropFile = (e) => { //드래그 드랍 파일
-        setIsLoad(true);
+
         preventDefaults(e);
         dragArea.current.classList.remove('highlight');
 
-        const files = e.dataTransfer.files;
-        const fileList = [];
+        
+        const type = ['gif', 'png', 'jpg', 'jpeg', 'webp'];
+        const temp = e.dataTransfer.files; //검증 전
+        const files = []; //검증 완료
+        const fileList = []; // 렌더링을 위한 리스트
 
+        type.forEach((tp) => { //드롭 파일 확장자 검증
+            temp.forEach((item) => {
+                if(tp === item.type.substr(6, 5)){
+                    files.push(item);
+                }
+            })
+        })
+        
+        setIsLoad(true); //로딩 시작
+        
         files.forEach(f=> {
             fileList.push({
                 title : f.name,
@@ -65,10 +78,10 @@ export default function Compressor(){
                 type : f.type.substr(6, 5),
             })
         });
-        setImageLi([
+        setImageLi([ //전체 파일 리스트에 렌더링
             ...imageLi,
             ...fileList
-        ]); //전체 파일 리스트에 렌더링
+        ]); 
 
         InputHandler(files);        
     }
@@ -105,7 +118,7 @@ export default function Compressor(){
             imgData.push(res); 
             compressedItems.push( 
                 {
-                    title : res.name.slice(0, -type.length) + '_webpp.' + type, //압축 후 이미지 파일명 변경
+                    title : res.name.slice(0, -type.length-1) + '_tiny_image.' + type, //압축 후 이미지 파일명 변경
                     type : type,
                     size : getfileSize(res.size),
                     link : URL.createObjectURL(res),
@@ -172,7 +185,7 @@ export default function Compressor(){
             <></> : <Loader/>
         }
         <Alert/>
-        <input ref={inputEle} type="file" id="fileInput" accept="image/*" style={{display: 'none'}} multiple onChange={onChangeInput}/>
+        <input ref={inputEle} type="file" id="fileInput" accept="image/png, image/jpg, image/jpeg, image/webp, image/gif," style={{display: 'none'}} multiple onChange={onChangeInput}/>
         <CompressorWrap>
             <CompressorDrag>
                 <div className="drag-area" ref={dragArea} onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
