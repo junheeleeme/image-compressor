@@ -12,8 +12,8 @@ const AlertStyled = styled.div`
 `
 const MessageBox = styled.div`
     position: absolute; top: -10px; right:50px; font-size: 14px; line-height: 19px; color: #fff;
-    width: 300px; padding: 15px;
-    background-color: rgba(0,0,0,0.5); transition: .45s ease;
+    width: 300px; padding: 15px; transition: .45s ease;
+    border-radius: 10px; background-color: rgba(0,0,0,0.5);
     z-index:-999; opacity: 0; 
 `
 
