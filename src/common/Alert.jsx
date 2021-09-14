@@ -8,14 +8,19 @@ const AlertStyled = styled.div`
 
     & box-icon{ width: 100%; height: 100%; transition: 0.5s ease; cursor: pointer; }
     &:hover { background-color:rgba(0,0,0, 0.4); }
-    &:hover .msgBox{ opacity: 1; z-index: 9999; }
-`
+    &:hover .msgBox{ opacity: 1; z-index: 9999; }`
 const MessageBox = styled.div`
-    position: absolute; top: -10px; right:50px; font-size: 14px; line-height: 19px; color: #fff;
+    position: absolute; top: -10px; right:55px; font-size: 14px; line-height: 19px; color: #fff;
     width: 300px; padding: 15px; transition: .45s ease;
     border-radius: 10px; background-color: rgba(0,0,0,0.5);
     z-index:-999; opacity: 0; 
-`
+    &::after{ 
+        content: ''; 
+        position: absolute; top: 15px; right: -15px;
+        width: 0; height: 0;
+	    border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 15px solid rgba(0,0,0,0.5);/* 화살표 */
+}`
+    
 
 const Alert = () => {
     return(

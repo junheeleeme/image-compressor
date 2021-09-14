@@ -1,6 +1,7 @@
 {
   "hosting": {
-    "public": "y",
+    "site": "tinyimage",
+    "public": "build",
     "ignore": [
       "firebase.json",
       "**/.*",

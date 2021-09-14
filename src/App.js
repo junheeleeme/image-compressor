@@ -4,6 +4,7 @@ import Header from './common/Header';
 import Footer from './common/Footer';
 import Main from './Layout/Main';
 import Compressor from './pages/Compressor';
+// import { fireapp } from './common/firebase';
 
 const AppStyled = styled.div`
   position: relative;
@@ -12,6 +13,7 @@ const AppStyled = styled.div`
 `
 
 function App() {
+
   return (
     <AppStyled className="App">
       <Header/>
@@ -22,7 +24,5 @@ function App() {
     </AppStyled>
   );
 }
-
-
 
 export default App;
