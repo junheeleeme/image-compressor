@@ -195,6 +195,7 @@ export default function Compressor(){
                 ?
             <></> : <Loader per={percent}/>
         }
+
         <Alert/>
         <input ref={inputEle} type="file" id="fileInput" accept="image/png, image/jpg, image/jpeg, image/webp, image/gif," style={{display: 'none'}} multiple onChange={onChangeInput}/>
         <CompressorWrap>

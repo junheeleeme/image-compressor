@@ -58,7 +58,7 @@ const Seekbar = ({changeQuality}) => {
         if (e.changedTouches) {
             e.clientX = e.changedTouches[0].clientX;
             const moveX = ((clientX - e.clientX)/10).toFixed(0);
-            console.log(moveX)
+    
             if(_default - moveX >= 0 && _default - moveX <= 100){            
                 setLeft(_default - moveX);
             }   
