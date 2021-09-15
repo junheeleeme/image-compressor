@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import 'boxicons'
 
 const AlertStyled = styled.div`
-    position: absolute; top: 15px; right: 15px; border-radius: 50%; width: 35; height: 35px; 
+    position: absolute; top: 15px; right: 15px; border-radius: 17.5px; width: 35; height: 35px; 
     background-color:rgba(0,0,0, 0.4); transition: 0.45s ease;  z-index: 9999;
     @media screen and (max-width: 600px){
         top: 20px; right: 20px;

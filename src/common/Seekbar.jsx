@@ -16,7 +16,7 @@ const SeekbarStyled = styled.div`
 const SeekStyled = styled.span` 
     display: inline-blcok; position: absolute; top: 50%; transform: translate(-50%, -50%); 
     left: ${props=> props.left}px;
-    width: 15px; height: 15px; user-select: none;
+    width: 20px; height: 20px; user-select: none;
     border-radius: 50%; cursor: pointer; background-color: #EEEEEE; border: 1px solid #B2B1B9;
 `
 
@@ -31,7 +31,7 @@ const Seekbar = ({changeQuality}) => {
             document.onmouseup = closeDrag;
             document.addEventListener('touchend',closeDrag);
             document.onmousemove = elementDrag;
-            document.addEventListener('touchmove',elementDrag);
+            document.addEventListener('ontouchmove',elementDrag);
         }
     }, [clientX]);
     useEffect(()=> {
@@ -40,22 +40,39 @@ const Seekbar = ({changeQuality}) => {
     }, [left]);
     
     const mouseDown = (e) => {
-        e.preventDefault();
+        // e = e || window.event;
+        // e.preventDefault();
         
         if (e.changedTouches) {
             e.clientX = e.changedTouches[0].clientX
         }
+    
         setClientX(e.clientX);
+        
     }
 
     const elementDrag = (e) =>{
-        e.preventDefault(); 
+        
+        // e = e || window.event;
+        // e.preventDefault();
+        if (e.changedTouches) {
+            e.clientX = e.changedTouches[0].clientX;
+            const moveX = ((clientX - e.clientX)/10).toFixed(0);
+            console.log(moveX)
+            if(_default - moveX >= 0 && _default - moveX <= 100){            
+                setLeft(_default - moveX);
+            }   
 
-        const moveX = clientX - e.clientX;
+        }else{
 
-        if(_default - moveX >= 0 && _default - moveX <= 100){            
-            setLeft(_default - moveX);
-        }        
+            const moveX = (clientX - e.clientX).toFixed(1);
+            console.log(moveX)
+            if(_default - moveX >= 0 && _default - moveX <= 100){            
+                setLeft(_default - moveX);
+            }        
+        }
+        
+        
     }
 
     function closeDrag() {
@@ -67,9 +84,9 @@ const Seekbar = ({changeQuality}) => {
 
     return(
         <WrapStyled>
-            <p>Quality : {left}%</p>
+            <p>Quality : {left.toFixed(0)}%</p>
             <SeekbarStyled>
-                <SeekStyled onMouseDown={mouseDown} left={left}/>
+                <SeekStyled onMouseDown={mouseDown} onTouchStart={mouseDown} onTouchMove={elementDrag} left={left}/>
             </SeekbarStyled>
         </WrapStyled>    
     )

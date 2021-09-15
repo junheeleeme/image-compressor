@@ -35,7 +35,6 @@ export default function Compressor(){
     const alldownBtn = useRef(null);
 
     useEffect(()=> { 
-        // console.log(imageLi); 
         setIsAllDown(false);
     }, [imageLi]);
 
@@ -186,7 +185,7 @@ export default function Compressor(){
     }
 
     const changeQuality = (num) => {
-        console.log(Number((num/100).toFixed(1)));
+        setQuality(Number((num/100).toFixed(1)));
     }
 
     return(
@@ -286,7 +285,7 @@ const CompressorDrag = styled.section`
 & .dragIcon{ 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1) rotate(0deg); z-index: 1000; cursor: pointer;
     transition: .3s ease;
-    @media screen and (max-width: 600px){ width: 300px; }
+    @media screen and (max-width: 600px){ width: 300px; top: 45%; }
     & box-icon{ display: block; width: 80px; height: 80px; margin: 0 auto 10px auto; }
     & p{ color: #fff; text-align: center; }
     & .choose{ position: relative; margin: 0 20px;  background-color: rgba(0,0,0,0.4); color: #fff;  border-radius: 5px; transition: 0.55s ease; cursor: pointer; }
