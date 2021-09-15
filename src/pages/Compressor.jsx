@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import styled from "styled-components"
 import Loader from "../common/Loader"
+import Seekbar from "../common/Seekbar"
 import 'boxicons'
 import imageCompression from 'browser-image-compression'
 import Alert from "../common/Alert"
@@ -27,6 +28,8 @@ export default function Compressor(){
     const [isLoad, setIsLoad] = useState(false);
     const [blobImg, setBlobImg] = useState([]);
     const [isAllDown, setIsAllDown] = useState(false);
+    const [percent, setPercent] = useState(0);
+    const [quality, setQuality] = useState(0.7);
     const inputEle = useRef(null);
     const dragArea = useRef(null);
     const alldownBtn = useRef(null);
@@ -142,10 +145,15 @@ export default function Compressor(){
         try{
             const options = {
                 maxSize: 1,
-                initialQuality: 0.5
+                onProgress : progress,
+                initialQuality: quality  //initial 0.7
             }
             return await imageCompression(img, options);
         } catch(e){ console.log(e); }
+    }
+    
+    const progress = (percent) => {
+        setPercent(percent);
     }
 
     const getfileSize = (x) => { //파일 사이즈 표현
@@ -177,12 +185,16 @@ export default function Compressor(){
         setIsAllDown(false);
     }
 
+    const changeQuality = (num) => {
+        console.log(Number((num/100).toFixed(1)));
+    }
+
     return(
         <>
         {
             !isLoad
                 ?
-            <></> : <Loader/>
+            <></> : <Loader per={percent}/>
         }
         <Alert/>
         <input ref={inputEle} type="file" id="fileInput" accept="image/png, image/jpg, image/jpeg, image/webp, image/gif," style={{display: 'none'}} multiple onChange={onChangeInput}/>
@@ -195,6 +207,7 @@ export default function Compressor(){
                         <p className="ImgEx2">&#38;</p>
                         <p className="ImgEx3">Drag &#38; Drop Your Images</p>
                 </div>
+                <Seekbar changeQuality={changeQuality}/>
             </CompressorDrag>
             <CompressorList>
                 <div className="list-area">
@@ -260,16 +273,20 @@ const CompressorWrap = styled.div`
 const CompressorDrag = styled.section`
     position: relative; height: 300px;
     &:hover div:first-child{ background-color: rgba(0,0,0, 0.35); }
+    @media screen and (max-width: 600px){
+        height: 350px;
+    }
 & .drag-area{
-    position: absolute; width: 100%; height: 100%; z-index: 99; cursor: pointer;
+    position: absolute; width: 100%; height: 100%; z-index: 999; cursor: pointer;
     border: 1px dashed #6d6a6a; border-bottom: none; 
     border-top-left-radius: 10px; border-top-right-radius: 10px;     
     background-color: rgba(0,0,0, 0.2); transition: .33s ease;
 }
 & .highlight{ border: 1px dashed #fff; background-color: rgba(0,0,0, 0.5); }
 & .dragIcon{ 
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1) rotate(0deg); z-index: 100; cursor: pointer;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1) rotate(0deg); z-index: 1000; cursor: pointer;
     transition: .3s ease;
+    @media screen and (max-width: 600px){ width: 300px; }
     & box-icon{ display: block; width: 80px; height: 80px; margin: 0 auto 10px auto; }
     & p{ color: #fff; text-align: center; }
     & .choose{ position: relative; margin: 0 20px;  background-color: rgba(0,0,0,0.4); color: #fff;  border-radius: 5px; transition: 0.55s ease; cursor: pointer; }
@@ -294,9 +311,12 @@ const CompressorList = styled.section`
             position: relative; display: inline-block; 
             width: 50%; height: 100%; vertical-align: top;
         }
-        & .left{ border-right: 1px solid #c7c7c7; }
+        & .left{ 
+            border-right: 1px solid #c7c7c7; 
+            @media screen and (max-width: 600px) { border-right: none; }
+        }
         @media screen and (max-width: 600px){
-            .left, .right{ width: 100%; height: 150px; }
+            .left, .right{ width: 100%; height: 175px; }
         }
         & ul{
             width: 100%; height: 100%; background-color: #fff; overflow: auto;
