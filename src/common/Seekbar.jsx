@@ -57,18 +57,21 @@ const Seekbar = ({changeQuality}) => {
         // e.preventDefault();
         if (e.changedTouches) {
             e.clientX = e.changedTouches[0].clientX;
-            const moveX = ((clientX - e.clientX)/10).toFixed(0);
-    
-            if(_default - moveX >= 0 && _default - moveX <= 100){            
-                setLeft(_default - moveX);
+            const moveX = (clientX - e.clientX).toFixed(0)/40;
+            const realMoveX = _default - moveX;
+            
+            if(realMoveX >= 0 && realMoveX <= 100){            
+                setLeft(realMoveX);
             }   
 
         }else{
 
             const moveX = (clientX - e.clientX).toFixed(1);
-            console.log(moveX)
-            if(_default - moveX >= 0 && _default - moveX <= 100){            
-                setLeft(_default - moveX);
+            const realMoveX = _default - moveX;
+            if(realMoveX >= 0 && realMoveX <= 100){            
+                if(realMoveX%2 === 0){
+                    setLeft(realMoveX);
+                }
             }        
         }
         
