@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
 
-
 const WrapStyled = styled.div`
     position: absolute;
     top: 47%; left: 50%; transform: translate(-50%, -50%); z-index: 9998;
@@ -11,10 +10,19 @@ const H1Styled = styled.h1`
 `
 
 const Loader = ({per}) => {
+
     return(
         <>
             <WrapStyled>
-                <H1Styled className="title">{per}%...</H1Styled>
+                <H1Styled className="title">
+                    {
+                        per === undefined
+                            ?
+                        'Loading...'
+                            :
+                        per+'%...'
+                    }
+                    </H1Styled>
                 <div className="rainbow-marker-loader"></div>
             </WrapStyled>
         </>

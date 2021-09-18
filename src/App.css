@@ -137,9 +137,9 @@ background: linear-gradient(to right, #ec2F4B, #009FFF); /* W3C, IE 10+/ Edge, F
     margin-left:-2.5%;
     animation: infinite alternate move-marker var(--duration) ease-in-out;    
     background:
-      no-repeat left   0% top    / 3rem  50% linear-gradient(to bottom right, transparent, transparent 40%, #fff 40%),
-      no-repeat left   0% bottom / 3rem  50% linear-gradient(to top right, transparent, transparent 40%, #fff 40%),
-      no-repeat left 3rem bottom / 100% 100% linear-gradient( #fff, #fff)
+      no-repeat left   0% top    / 3rem  50% linear-gradient(to bottom right, transparent, transparent 40%, #D8E3E7 40%),
+      no-repeat left   0% bottom / 3rem  50% linear-gradient(to top right, transparent, transparent 40%, #D8E3E7 40%),
+      no-repeat left 3rem bottom / 100% 100% linear-gradient( #D8E3E7, #D8E3E7)
   }
   
   @keyframes move-marker{

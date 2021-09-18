@@ -27,7 +27,7 @@ const Seekbar = ({changeQuality}) => {
     const [clientX, setClientX] = useState();
 
     useEffect(()=> {
-        if(clientX != undefined){
+        if(clientX !== undefined){
             document.onmouseup = closeDrag;
             document.addEventListener('touchend',closeDrag);
             document.onmousemove = elementDrag;

@@ -1,9 +1,11 @@
 import './App.css';
+import { Route, Switch } from 'react-router';
 import styled from 'styled-components';
 import Header from './common/Header';
 import Footer from './common/Footer';
 import Main from './Layout/Main';
 import Compressor from './pages/Compressor';
+import WebpConverter from './pages/WebpConverter';
 // import { fireapp } from './common/firebase';
 
 const AppStyled = styled.div`
@@ -18,7 +20,10 @@ function App() {
     <AppStyled className="App">
       <Header/>
         <Main>
-          <Compressor/>
+          <Switch>
+            <Route path="/" exact component={Compressor} />
+            <Route path="/webp-converter" exact component={WebpConverter} />
+          </Switch>
         </Main>
       <Footer/>
     </AppStyled>
