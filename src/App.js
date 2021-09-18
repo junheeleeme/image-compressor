@@ -22,7 +22,7 @@ function App() {
         <Main>
           <Switch>
             <Route path="/" exact component={Compressor} />
-            <Route path="/webp-converter" exact component={WebpConverter} />
+            <Route path="/webp" exact component={WebpConverter} />
           </Switch>
         </Main>
       <Footer/>

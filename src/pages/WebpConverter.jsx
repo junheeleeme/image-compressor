@@ -88,6 +88,7 @@ export default function WebpConverter(){
 
         preventDefaults(e);
         dragArea.current.classList.remove('highlight');
+        let isFile = true;
         
         const type = ['gif', 'png', 'jpg', 'jpeg', 'webp'];
         const temp = e.dataTransfer.files; //검증 전
@@ -103,36 +104,43 @@ export default function WebpConverter(){
             })
         });
         
-        files.forEach(f=> {
-            fileList.push({
-                title : f.name,
-                size : getfileSize(f.size),
-                type : f.type.substr(6, 5),
-            })
-        });
-        setImageLi([ //전체 파일 리스트에 렌더링
-            ...imageLi,
-            ...fileList
-        ]); 
-
-        const blobItems =[], convertedItems = [];
-
-        for(let i=0 ; i < files.length ; i++ ){ //동기식 Blob, 렌더링 데이터 받아오기
-            const [blob, converted] = await ConvertWebp(files[i]);
-            blobItems.push(blob);
-            convertedItems.push(converted);
+        if(files.length === 0){ //업로드된 파일에 이미지가 없을 경우
+            isFile = false;
         }
 
-        setBlobImg([
-            ...blobImg,
-            ...blobItems
-        ]);
-        setDoneLi([ //변환 완료 리스트에 렌더링
-            ...doneLi,
-            ...convertedItems
-        ]);
-        setIsLoad(false); //로딩 종료
-        setIsAllDown(true); //전체 변환 파일 다운로드
+        if(isFile){ //이미지 파일이 있는 경우 convert 시작
+
+            files.forEach(f=> {
+                fileList.push({
+                    title : f.name,
+                    size : getfileSize(f.size),
+                    type : f.type.substr(6, 5),
+                })
+            });
+            setImageLi([ //전체 파일 리스트에 렌더링
+                ...imageLi,
+                ...fileList
+            ]); 
+
+            const blobItems =[], convertedItems = [];
+
+            for(let i=0 ; i < files.length ; i++ ){ //동기식 Blob, 렌더링 데이터 받아오기
+                const [blob, converted] = await ConvertWebp(files[i]);
+                blobItems.push(blob);
+                convertedItems.push(converted);
+            }
+
+            setBlobImg([
+                ...blobImg,
+                ...blobItems
+            ]);
+            setDoneLi([ //변환 완료 리스트에 렌더링
+                ...doneLi,
+                ...convertedItems
+            ]);
+            setIsLoad(false); //로딩 종료
+            setIsAllDown(true); //전체 변환 파일 다운로드
+        }
 
     }
 
@@ -182,7 +190,6 @@ export default function WebpConverter(){
     };
     const AllDownload = () => { //이미지 압축파일 만들기
         const zip = new JSZip();
-        console.log(blobImg);
         blobImg.forEach(blob => {
             zip.folder("webpp").file(blob.name, blob);
         });

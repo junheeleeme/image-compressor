@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import logo from '../images/logo.png'
 
@@ -13,10 +13,15 @@ const HeaderStyled = styled.header`
     font-size: 25px; color: #fff; transition: .3s ease;
 }`
 const NavStyled = styled.nav`
-    float: right;
+    position: absolute; top: 50%; left: 300px; transform: translate(0, -50%);
+    
     & ul{ padding-left: 0; }
     & li{ display: inline-block; }
-    & li a{ display: inline-block; padding: 5px 10px; border: 1px solid #000; }
+    & li a{ 
+        display: inline-block; margin: 0 5px; padding: 5px 10px; font-size: 16px;
+        color: #eee;
+    }
+    & .on { font-weight: bold; color: #fff; }
 `
 
 const Header = () => {
@@ -29,10 +34,10 @@ const Header = () => {
             <NavStyled>
                 <ul>
                     <li>
-                        <Link to="/">Home</Link>
+                        <NavLink to="/" exact activeClassName="on">COMPRESS IMAGE</NavLink>
                     </li>
                     <li>
-                        <Link to="/webp-converter">Webp</Link>
+                        <NavLink to="/webp" activeClassName="on">CONVERT to Webp</NavLink>
                     </li>
                 </ul>
             </NavStyled>
