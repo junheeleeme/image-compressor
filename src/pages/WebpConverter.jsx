@@ -1,15 +1,12 @@
-import React, { useState, useRef, useEffect } from "react"
-import styled from "styled-components"
-import Loader from "../common/Loader"
-import Seekbar from "../common/Seekbar"
-import 'boxicons'
-import imageCompression from 'browser-image-compression'
-import Alert from "../common/Alert"
+import React, { useRef, useState } from 'react'
+import styled from 'styled-components'
 import JSZip from "jszip"
+import Alert from "../common/Alert"
+import Loader from '../common/Loader'
 import FileSaver from "file-saver"
+import 'boxicons'
 
-export default function Compressor(){
-
+export default function WebpConverter(){
     const [imageLi, setImageLi] = useState([ //렌더링을 위한 state
         // {
         //     title : '',
@@ -25,18 +22,13 @@ export default function Compressor(){
         //     link : '',
         // },
     ]);
-    const [isLoad, setIsLoad] = useState(false);
-    const [blobImg, setBlobImg] = useState([]);
-    const [isAllDown, setIsAllDown] = useState(false);
-    const [quality, setQuality] = useState(0.7);
-    const [percent, setPercent] = useState(0);
+    const [isLoad, setIsLoad] = useState(false); // false : 로딩x, true : 로딩o
+    const [blobImg, setBlobImg] = useState([]);  // 이미지 blob 데이터
+    const [isAllDown, setIsAllDown] = useState(false); // true : 이미지 변환 후 전체 다운로드 표시
+    const [quality, setQuality] = useState(0.6); // webp 변환 퀄리티
     const inputEle = useRef(null);
     const dragArea = useRef(null);
     const alldownBtn = useRef(null);
-
-    useEffect(()=> { 
-        setIsAllDown(false);
-    }, [imageLi]);
 
     const preventDefaults = (e) => { //이벤트 방지
         e.preventDefault();
@@ -51,7 +43,7 @@ export default function Compressor(){
         preventDefaults(e);
         dragArea.current.classList.remove('highlight');
     }
-
+    
     const clickInput = (e) => {
         preventDefaults(e);
         inputEle.current.click();
@@ -64,44 +56,12 @@ export default function Compressor(){
         setIsAllDown(false);
     }
 
-    const changeQuality = (num) => {
-        setQuality(Number((num/100).toFixed(1)));
-    }
-    
-    const DropFile = (e) => { //드래그 드랍 파일
-
-        preventDefaults(e);
-        dragArea.current.classList.remove('highlight');
-
-        
-        const type = ['gif', 'png', 'jpg', 'jpeg', 'webp'];
-        const temp = e.dataTransfer.files; //검증 전
-        const files = []; //검증 완료
-        const fileList = []; // 렌더링을 위한 리스트
-
-        type.forEach((tp) => { //드롭 파일 확장자 검증
-            temp.forEach((item) => {
-                if(tp === item.type.substr(6, 5)){
-                    files.push(item);
-                }
-            })
-        })
-        
-        setIsLoad(true); //로딩 시작
-        
-        files.forEach(f=> {
-            fileList.push({
-                title : f.name,
-                size : getfileSize(f.size),
-                type : f.type.substr(6, 5),
-            })
-        });
-        setImageLi([ //전체 파일 리스트에 렌더링
-            ...imageLi,
-            ...fileList
-        ]); 
-
-        CompressImg(files);        
+    const CheckQuality = (e) => {
+        if(e.target.checked === true){
+            setQuality(0.8);
+        }else{
+            setQuality(0.6);
+        }
     }
 
     const onChangeInput = (e) => { 
@@ -120,54 +80,99 @@ export default function Compressor(){
             ...imageLi,
             ...fileList
         ]); //전체 파일 리스트에 렌더링
-        CompressImg(files);        
 
+        ConvertWebp(files);
     }
 
-    const CompressImg = async(file) => { //압축된 이미지 다운로드
+    const DropFile = async(e) => { //드래그 드랍 파일
 
-        const compressedItems = [];
-        const imgData = []; //압축을 위해 원본을 다른 배열에 저장
+        preventDefaults(e);
+        dragArea.current.classList.remove('highlight');
+        
+        const type = ['gif', 'png', 'jpg', 'jpeg', 'webp'];
+        const temp = e.dataTransfer.files; //검증 전
+        const files = []; //검증 완료
+        const fileList = []; // 렌더링을 위한 리스트
+        setIsLoad(true); //로딩 시작
 
-        for(let i=0 ; i < file.length ; i++){  //비동기로 복수의 이미지 압축 후 배열에 추가
-            const res = await compressImage(file[i]);
-            const type = res.type.substr(6, 5); //이미지 확장자
-            imgData.push(res); 
-            compressedItems.push( 
-                {
-                    title : res.name.slice(0, -type.length-1) + '_tiny_image.' + type, //압축 후 이미지 파일명 변경
-                    type : type,
-                    size : getfileSize(res.size),
-                    link : URL.createObjectURL(res),
+        type.forEach((tp) => { //드롭 파일 확장자 검증
+            temp.forEach((item) => {
+                if(tp === item.type.substr(6, 5)){
+                    files.push(item);
                 }
-            );
+            })
+        });
+        
+        files.forEach(f=> {
+            fileList.push({
+                title : f.name,
+                size : getfileSize(f.size),
+                type : f.type.substr(6, 5),
+            })
+        });
+        setImageLi([ //전체 파일 리스트에 렌더링
+            ...imageLi,
+            ...fileList
+        ]); 
+
+        const blobItems =[], convertedItems = [];
+
+        for(let i=0 ; i < files.length ; i++ ){ //동기식 Blob, 렌더링 데이터 받아오기
+            const [blob, converted] = await ConvertWebp(files[i]);
+            blobItems.push(blob);
+            convertedItems.push(converted);
         }
+
         setBlobImg([
             ...blobImg,
-            ...imgData
+            ...blobItems
         ]);
-        setDoneLi([
+        setDoneLi([ //변환 완료 리스트에 렌더링
             ...doneLi,
-            ...compressedItems
+            ...convertedItems
         ]);
-        setIsLoad(false);
-        setIsAllDown(true); // 이미지 압축 완료 후 전체 다운로드 버튼 렌더링
+        setIsLoad(false); //로딩 종료
+        setIsAllDown(true); //전체 변환 파일 다운로드
 
     }
 
-    const compressImage = async(img) => { //이미지 압축
-        try{
-            const options = {
-                maxSize: 1,
-                onProgress : progress,
-                initialQuality: quality  //initial 0.7
+    const ConvertWebp = async(files) => {
+        return new Promise((resolve, reject) => {
+
+            const name = files.name; //파일명 저장
+            // const ImgData  = []; //압축을 위해 Blob 데이터를 배열에 저장
+            
+            const userImg = new Image();
+            userImg.src =  URL.createObjectURL(files);
+            
+            userImg.onload = async() => {
+                const canvas = document.createElement('canvas'); //캔버스 생성
+                const ctx = canvas.getContext('2d');
+                canvas.width = userImg.width;
+                canvas.height = userImg.height;
+                ctx.drawImage(userImg, 0, 0); //캔버스에 이미지 그리기
+                
+                const blob = await Canvas2Blob(canvas); // 비동기 blob 생성
+                const type = blob.type.substr(6, 5); //이미지 확장자
+                blob.name = name.slice(0, -type.length-1) + '_tiny_image.' + type; //기존 blob.name이 없어 새로 추가
+                const convertedItem = {
+                    title : name.slice(0, -type.length-1) + '_tiny_image.' + type, //압축 후 이미지 파일명 변경
+                    size : getfileSize(blob.size),
+                    type : type,
+                    link : URL.createObjectURL(blob),
+                };
+
+                resolve([blob, convertedItem]); //blob : 이미지 blob 데이터, convertedItem : 렌더링에 필요한
             }
-            return await imageCompression(img, options);
-        } catch(e){ console.log(e); }
+        });
     }
     
-    const progress = (percent) => {
-        setPercent(percent);
+    const Canvas2Blob = (canvas) =>{ 
+        return new Promise((resolve, reject)=> {
+            canvas.toBlob(async(blob) => {
+                resolve(blob);
+            }, 'image/webp', quality);
+        });
     }
 
     const getfileSize = (x) => { //파일 사이즈 표현
@@ -175,9 +180,9 @@ export default function Compressor(){
         var e = Math.floor(Math.log(x) / Math.log(1024));
         return (x / Math.pow(1024, e)).toFixed(2) + " " + s[e];
     };
-
     const AllDownload = () => { //이미지 압축파일 만들기
         const zip = new JSZip();
+        console.log(blobImg);
         blobImg.forEach(blob => {
             zip.folder("webpp").file(blob.name, blob);
         });
@@ -187,18 +192,20 @@ export default function Compressor(){
         });
     }
 
-
     return(
         <>
         {
             !isLoad
                 ?
-            <></> : <Loader per={percent}/>
+            <></> : <Loader/>
         }
         <input ref={inputEle} type="file" id="fileInput" accept="image/png, image/jpg, image/jpeg, image/webp, image/gif," style={{display: 'none'}} multiple onChange={onChangeInput}/>
         <CompressorWrap>
             <CompressorDrag>
                 <Alert/>
+                <QualityStyled>
+                    <input type="checkbox" onClick={CheckQuality}/><span>Same quality</span>
+                </QualityStyled>
                 <div className="drag-area" ref={dragArea} onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
                 <div className="dragIcon" onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
                         <box-icon name='image' type='solid' color='#ffffff' />
@@ -206,7 +213,6 @@ export default function Compressor(){
                         <p className="ImgEx2">&#38;</p>
                         <p className="ImgEx3">Drag &#38; Drop Your Images</p>
                 </div>
-                <Seekbar changeQuality={changeQuality}/>
             </CompressorDrag>
             <CompressorList>
                 <div className="list-area">
@@ -267,8 +273,7 @@ export default function Compressor(){
 }
 
 const CompressorWrap = styled.div`
-    width: 100%;
-`
+    width: 100%;`
 const CompressorDrag = styled.section`
     position: relative; height: 300px;
     &:hover div:first-child{ background-color: rgba(0,0,0, 0.35); }
@@ -356,5 +361,10 @@ const CompressorList = styled.section`
             cursor: pointer;font-size: 14px;  padding: 5px 15px; margin: 0 10px;
             background-color:rgba(0,0,0,0.5); border-radius: 7px; color: #fff; border: none;
         }
-    }
+    }`
+const QualityStyled = styled.div`
+    position: absolute; bottom: 10px; right: 10px;
+    padding: 5px; z-index: 1000;
+    & input[type='checkbox']{ display: inline-block; width: 16px; height: 16px; vertical-align: top; margin: 4px 5px 0 0;  }
+    & span{ color: #fff; font-size: 15px; vertical-align: top; }
 `
