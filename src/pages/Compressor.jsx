@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react"
 import styled from "styled-components"
 import Loader from "../common/Loader"
 import Seekbar from "../common/Seekbar"
+import Main from "../Layout/Main"
 import 'boxicons'
 import imageCompression from 'browser-image-compression'
 import Alert from "../common/Alert"
@@ -190,78 +191,80 @@ export default function Compressor(){
 
     return(
         <>
-        {
-            !isLoad
-                ?
-            <></> : <Loader per={percent}/>
-        }
-        <input ref={inputEle} type="file" id="fileInput" accept="image/png, image/jpg, image/jpeg, image/webp, image/gif," style={{display: 'none'}} multiple onChange={onChangeInput}/>
-        <CompressorWrap>
-            <CompressorDrag>
-                <Alert/>
-                <div className="drag-area" ref={dragArea} onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
-                <div className="dragIcon" onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
-                        <box-icon name='image' type='solid' color='#ffffff' />
-                        <p className="choose"><label htmlFor="fileInput">Choose Files</label></p>
-                        <p className="ImgEx2">&#38;</p>
-                        <p className="ImgEx3">Drag &#38; Drop Your Images</p>
-                </div>
-                <Seekbar changeQuality={changeQuality}/>
-            </CompressorDrag>
-            <CompressorList>
-                <div className="list-area">
-                    <div className="left">
-                        <ul>
-                        <li style={{textAlign: 'center', fontSize: '15px', background : 'rgba(0,0,0,0.05)'  }}>
-                            <span style={{fontSize : '15px'}} className="img-no">No</span>
-                            <span style={{fontSize : '15px'}} className="img-title">Uploaded File Name</span>
-                            <span style={{fontSize : '15px'}} className="img-size">Size</span>
-                        </li>
-                        {   
-                            imageLi.map((li, idx)=> 
-                                <li key={li.title + idx}>
-                                    <span className="img-no">{idx+1}</span>
-                                    <span className="img-title" title={li.title}>{li.title}</span>
-                                    <span className="img-size">{li.size}</span>
+            <Main>
+                {
+                    !isLoad
+                        ?
+                    <></> : <Loader per={percent}/>
+                }
+                <input ref={inputEle} type="file" id="fileInput" accept="image/png, image/jpg, image/jpeg, image/webp, image/gif," style={{display: 'none'}} multiple onChange={onChangeInput}/>
+                <CompressorWrap>
+                    <CompressorDrag>
+                        <Alert/>
+                        <div className="drag-area" ref={dragArea} onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}/>
+                        <div className="dragIcon" onClick={clickInput} onDragEnter={DragHighlight} onDragOver={DragHighlight} onDragLeave={unDragHighlight} onDrop={DropFile}>
+                                <box-icon name='image' type='solid' color='#ffffff' />
+                                <p className="choose"><label htmlFor="fileInput">Choose Files</label></p>
+                                <p className="ImgEx2">&#38;</p>
+                                <p className="ImgEx3">Drag &#38; Drop Your Images</p>
+                        </div>
+                        <Seekbar changeQuality={changeQuality}/>
+                    </CompressorDrag>
+                    <CompressorList>
+                        <div className="list-area">
+                            <div className="left">
+                                <ul>
+                                <li style={{textAlign: 'center', fontSize: '15px', background : 'rgba(0,0,0,0.05)'  }}>
+                                    <span style={{fontSize : '15px'}} className="img-no">No</span>
+                                    <span style={{fontSize : '15px'}} className="img-title">Uploaded File Name</span>
+                                    <span style={{fontSize : '15px'}} className="img-size">Size</span>
                                 </li>
-                            )
-                        }
-                        </ul>
-                    </div>
-                    <div className="right">
-                        <ul>
-                            <li style={{textAlign: 'center', background : 'rgba(0,0,0,0.05)'}}>
-                                <span style={{fontSize : '15px'}} className="img-no-done">No</span>
-                                <span style={{fontSize : '15px'}} className="img-title-done">Compressed File Name</span>
-                                <span style={{fontSize : '15px'}} className="img-size-done">Size</span>
-                                <span style={{fontSize : '15px', padding : '7px'}} title="Download" className="img-down-done">D</span>
-                            </li>
-                            {  
-                                doneLi.map((li, idx)=> 
-                                    <li key={li.title + idx}>
-                                        <span className="img-no-done">{idx+1}</span>
-                                        <span className="img-title-done" title={li.title}>{li.title}</span>
-                                        <span className="img-size-done">{li.size}</span>   
-                                        <span className="img-down-done"><a href={li.link} download={li.title}><box-icon type='solid' name='cloud-download'/></a></span>
-                                    </li>
-                                )
-                            }
-                        </ul>
-                        {
-                            !isAllDown
-                                ?
-                            <></>
-                                : 
-                            <div className="done-btn-Wrap">
-                                <button onClick={AllClear} className="allclearBtn">전체 지우기</button>
-                                <button ref={alldownBtn} onClick={AllDownload} className="alldownBtn">전체 다운로드</button>
+                                {   
+                                    imageLi.map((li, idx)=> 
+                                        <li key={li.title + idx}>
+                                            <span className="img-no">{idx+1}</span>
+                                            <span className="img-title" title={li.title}>{li.title}</span>
+                                            <span className="img-size">{li.size}</span>
+                                        </li>
+                                    )
+                                }
+                                </ul>
                             </div>
-                        }
-                        
-                    </div>                    
-                </div>
-            </CompressorList>
-        </CompressorWrap>
+                            <div className="right">
+                                <ul>
+                                    <li style={{textAlign: 'center', background : 'rgba(0,0,0,0.05)'}}>
+                                        <span style={{fontSize : '15px'}} className="img-no-done">No</span>
+                                        <span style={{fontSize : '15px'}} className="img-title-done">Compressed File Name</span>
+                                        <span style={{fontSize : '15px'}} className="img-size-done">Size</span>
+                                        <span style={{fontSize : '15px', padding : '7px'}} title="Download" className="img-down-done">D</span>
+                                    </li>
+                                    {  
+                                        doneLi.map((li, idx)=> 
+                                            <li key={li.title + idx}>
+                                                <span className="img-no-done">{idx+1}</span>
+                                                <span className="img-title-done" title={li.title}>{li.title}</span>
+                                                <span className="img-size-done">{li.size}</span>   
+                                                <span className="img-down-done"><a href={li.link} download={li.title}><box-icon type='solid' name='cloud-download'/></a></span>
+                                            </li>
+                                        )
+                                    }
+                                </ul>
+                                {
+                                    !isAllDown
+                                        ?
+                                    <></>
+                                        : 
+                                    <div className="done-btn-Wrap">
+                                        <button onClick={AllClear} className="allclearBtn">전체 지우기</button>
+                                        <button ref={alldownBtn} onClick={AllDownload} className="alldownBtn">전체 다운로드</button>
+                                    </div>
+                                }
+                                
+                            </div>                    
+                        </div>
+                    </CompressorList>
+                </CompressorWrap>
+            </Main>
         </>
     )
 }

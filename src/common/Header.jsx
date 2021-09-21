@@ -18,7 +18,7 @@ const NavStyled = styled.nav`
     & ul{ padding-left: 0; }
     & li{ display: inline-block; }
     & li a{ 
-        display: inline-block; margin: 0 5px; padding: 5px 10px; font-size: 16px;
+        display: inline-block; margin: 0 5px; padding: 5px 10px; font-size: 15px;
         color: #eee;
     }
     & .on { font-weight: bold; color: #fff; }
@@ -38,6 +38,9 @@ const Header = () => {
                     </li>
                     <li>
                         <NavLink to="/webp" activeClassName="on">CONVERT to Webp</NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/resize" activeClassName="on">RESIZE IMAGE</NavLink>
                     </li>
                 </ul>
             </NavStyled>
