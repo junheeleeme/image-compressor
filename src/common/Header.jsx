@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import logo from '../images/logo.png'
+import 'boxicons'
 
 const HeaderStyled = styled.header`
     position: relative;
@@ -10,36 +11,83 @@ const HeaderStyled = styled.header`
 & .header-wrap>img { display: inline-block; width: 40px; height: 40px; margin-right: 5px; vertical-align: middle; }
 & .header-wrap>h1{
     display: inline-block; vertical-align: top; 
-    font-size: 25px; color: #fff; transition: .3s ease;
+    font-size: 23px; color: #fff; transition: .3s ease;
 }`
 const NavStyled = styled.nav`
-    position: absolute; top: 50%; left: 300px; transform: translate(0, -50%);
-    
+    position: absolute; top: 50%; right: 10px; transform: translate(0, -50%);
+    transition: 0.6s ease;
     & ul{ padding-left: 0; }
     & li{ display: inline-block; }
     & li a{ 
         display: inline-block; margin: 0 5px; padding: 5px 10px; font-size: 15px;
         color: #eee;
     }
+    & ul .closeBtn{ display: none; }
     & .on { font-weight: bold; color: #fff; }
+    @media screen and (max-width: 768px){
+        position: fixed; top: 0; left: ${props=> props.left}; transform: translate(0, 0);
+        width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.9);
+        z-index: 9999;
+        & ul li{ display: block; text-align: center; }
+        & ul li a{ width:  100%; margin: 0; padding: 20px 0; font-size: 20px; }
+        & ul .closeBtn{ 
+            display: block; position: relative; height: 80px;
+            & a{ padding: 0; width: 100%; height: 100%; }
+            & a::after{ 
+                content: ''; position: absolute; top: 50%; left: 50%;
+                transform: translate(-50%, -50%) rotate(45deg); width: 35px; height: 5px; background-color: #fff;
+            }
+            & a::before{ 
+                content: ''; position: absolute; top: 50%; left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg); width: 35px; height: 5px; background-color: #fff;
+            }
+        }
+    }
+`
+const MobileMenu = styled.div`
+    display: none; position: absolute; top: 50%; right: 20px; width: 35px; height: 35px;
+    transform: translate(0, -50%); cursor: pointer;
+    & box-icon{ width: 100%; height: 100%; }
+@media screen and (max-width: 768px){
+        display: block;
+}
 `
 
 const Header = () => {
+
+    const [isShow, setIsShow] = useState(false);
+
+    const clickMobileMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if(isShow === true){
+            setIsShow(false);
+        }else{
+            setIsShow(true);
+        }
+    }
+
     return(
         <>
         <HeaderStyled>
             <div className="header-wrap">
                 <img src={logo} alt="logo" /><h1>Tiny Image</h1>
             </div>
-            <NavStyled>
+            <MobileMenu onClick={clickMobileMenu}>
+                <box-icon className="menuBtn" name='menu' color="#ffffff"/>
+            </MobileMenu>
+            <NavStyled left={isShow === true ? '0vw' : '100vw'}>
                 <ul>
-                    <li>
+                    <li className="closeBtn">
+                        <a href="/" onClick={clickMobileMenu}></a>
+                    </li>
+                    <li onClick={clickMobileMenu}>
                         <NavLink to="/" exact activeClassName="on">COMPRESS IMAGE</NavLink>
                     </li>
-                    <li>
+                    <li onClick={clickMobileMenu}>
                         <NavLink to="/webp" activeClassName="on">CONVERT to Webp</NavLink>
                     </li>
-                    <li>
+                    <li onClick={clickMobileMenu}>
                         <NavLink to="/resize" activeClassName="on">RESIZE IMAGE</NavLink>
                     </li>
                 </ul>

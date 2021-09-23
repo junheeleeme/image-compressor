@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 const WrapStyled = styled.div`
     position: absolute; bottom: 10px; right: 10px; background-color: rgba(0,0,0, 0.25);
-    width: 130px; height:50px; z-index: 9999; user-select: none;
+    width: 130px; height:50px; z-index: 1000; user-select: none;
     & p{ 
         position: absolute; left: 50%; top: 25%; transform: translate(-50%, -50%);
         font-size: 12px; color: #fff; width: 100%; text-align: center;

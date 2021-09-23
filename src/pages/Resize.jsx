@@ -149,8 +149,7 @@ export default function Resize(){
             aTag.href = URL.createObjectURL(res);
             aTag.click();
         }, type);
-    }
-
+    }   
 
     const onChangeWidth_Ele = (e) => {
         setWidth(Number(e.target.value));
