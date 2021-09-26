@@ -65,7 +65,8 @@ export default function WebpConverter(){
         }
     }
 
-    const onChangeInput = (e) => { 
+    const onChangeInput = async(e) => { 
+
         setIsLoad(true);
         const files = e.target.files;
         const fileList = [];
@@ -77,13 +78,31 @@ export default function WebpConverter(){
                 type : f.type.substr(6, 5),
             })
         });
-        setImageLi([
+        setImageLi([ //전체 파일 리스트에 렌더링
             ...imageLi,
             ...fileList
-        ]); //전체 파일 리스트에 렌더링
+        ]); 
 
-        ConvertWebp(files);
+        const blobItems =[], convertedItems = [];
+
+        for(let i=0 ; i < files.length ; i++ ){ //동기식 Blob, 렌더링 데이터 받아오기
+            const [blob, converted] = await ConvertWebp(files[i]);
+            blobItems.push(blob);
+            convertedItems.push(converted);
+        }
+
+        setBlobImg([
+            ...blobImg,
+            ...blobItems
+        ]);
+        setDoneLi([ //변환 완료 리스트에 렌더링
+            ...doneLi,
+            ...convertedItems
+        ]);
+        setIsLoad(false); //로딩 종료
+        setIsAllDown(true); //전체 변환 파일 다운로드
     }
+
 
     const DropFile = async(e) => { //드래그 드랍 파일
 

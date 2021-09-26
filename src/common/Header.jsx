@@ -8,8 +8,8 @@ const HeaderStyled = styled.header`
     position: relative;
     height: 80px;
 & .header-wrap{ position: absolute; top: 50%; left: 20px; transform: translate(0, -50%); cursor: pointer; }
-& .header-wrap>img { display: inline-block; width: 40px; height: 40px; margin-right: 5px; vertical-align: middle; }
-& .header-wrap>h1{
+& .header-wrap>a img { display: inline-block; width: 40px; height: 40px; margin-right: 5px; vertical-align: middle; }
+& .header-wrap>a h1{
     display: inline-block; vertical-align: top; 
     font-size: 23px; color: #fff; transition: .3s ease;
 }`
@@ -17,13 +17,14 @@ const NavStyled = styled.nav`
     position: absolute; top: 50%; right: 10px; transform: translate(0, -50%);
     transition: 0.6s ease;
     & ul{ padding-left: 0; }
-    & li{ display: inline-block; }
+    & li{ display: inline-block; position: relative; }
     & li a{ 
         display: inline-block; margin: 0 5px; padding: 5px 10px; font-size: 15px;
         color: #eee;
     }
     & ul .closeBtn{ display: none; }
-    & .on { font-weight: bold; color: #fff; }
+    & .on { font-weight: bold; color: #fff;}
+    & .on::after{ content: ''; position: absolute; bottom: 0; left: 50%; width: 90%; height: 2px; background-color: #fff; transform: translate(-50%, 0); }
     @media screen and (max-width: 768px){
         position: fixed; top: 0; left: ${props=> props.left}; transform: translate(0, 0);
         width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.9);
@@ -71,7 +72,9 @@ const Header = () => {
         <>
         <HeaderStyled>
             <div className="header-wrap">
-                <img src={logo} alt="logo" /><h1>Tiny IMG</h1>
+                <a href="/">
+                    <img src={logo} alt="logo" /><h1>Tiny IMG</h1>
+                </a>
             </div>
             <MobileMenu onClick={clickMobileMenu}>
                 <box-icon className="menuBtn" name='menu' color="#ffffff"/>
