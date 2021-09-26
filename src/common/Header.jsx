@@ -7,15 +7,14 @@ import 'boxicons'
 const HeaderStyled = styled.header`
     position: relative;
     height: 80px;
-& .header-wrap{ position: absolute; top: 50%; left: 20px; transform: translate(0, -50%); cursor: pointer; }
+& .header-wrap{ position: absolute; top: 50%; left: 20px; transform: translate(0, -50%); cursor: pointer;  }
 & .header-wrap>a img { display: inline-block; width: 40px; height: 40px; margin-right: 5px; vertical-align: middle; }
 & .header-wrap>a h1{
     display: inline-block; vertical-align: top; 
-    font-size: 23px; color: #fff; transition: .3s ease;
+    font-size: 23px; color: #fff;
 }`
 const NavStyled = styled.nav`
     position: absolute; top: 50%; right: 10px; transform: translate(0, -50%);
-    transition: 0.6s ease;
     & ul{ padding-left: 0; }
     & li{ display: inline-block; position: relative; }
     & li a{ 
@@ -28,9 +27,9 @@ const NavStyled = styled.nav`
     @media screen and (max-width: 768px){
         position: fixed; top: 0; left: ${props=> props.left}; transform: translate(0, 0);
         width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.9);
-        z-index: 9999;
+        z-index: 9999; transition: left .3s ease;
         & ul li{ display: block; text-align: center; }
-        & ul li a{ width:  100%; margin: 0; padding: 20px 0; font-size: 20px; }
+        & ul li a{ width:  100%; margin: 0; padding: 30px 0; font-size: 20px; }
         & ul .closeBtn{ 
             display: block; position: relative; height: 80px;
             & a{ padding: 0; width: 100%; height: 100%; }
@@ -43,6 +42,8 @@ const NavStyled = styled.nav`
                 transform: translate(-50%, -50%) rotate(-45deg); width: 35px; height: 5px; background-color: #fff;
             }
         }
+        & .on::after{ bottom: 0; width: 40%; }
+        & .on::before{ content: ''; position: absolute; top: 0; left: 50%; width: 40%; height: 2px; background-color: #fff; transform: translate(-50%, 0); }
     }
 `
 const MobileMenu = styled.div`

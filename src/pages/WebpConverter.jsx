@@ -113,7 +113,7 @@ export default function WebpConverter(){
         const temp = e.dataTransfer.files; //검증 전
         const files = []; //검증 완료
         const fileList = []; // 렌더링을 위한 리스트
-        setIsLoad(true); //로딩 시작
+        
 
         type.forEach((tp) => { //드롭 파일 확장자 검증
             temp.forEach((item) => {
@@ -124,7 +124,7 @@ export default function WebpConverter(){
         });
 
         if(files.length !== 0){ //이미지 파일이 있는 경우 convert 시작
-
+            setIsLoad(true); //로딩 시작
             files.forEach(f=> {
                 fileList.push({
                     title : f.name,

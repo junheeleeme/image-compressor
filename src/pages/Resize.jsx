@@ -41,13 +41,13 @@ export default function Resize(){
         const files = e.target.files;
         const fileList = [];
 
-        files.forEach(f=> {
-            fileList.push({
-                title : f.name,
-                size : getfileSize(f.size),
-                type : f.type.substr(6, 5),
-            })
-        });
+        if(files.length !== 0){
+            setIsUpload(true);
+        }else{
+            console.log("이미지 파일이 없음")
+        }
+        setType(files[0].type);
+        fileRead(files[0]); //캔버스 생성
 
     }
 
@@ -70,11 +70,12 @@ export default function Resize(){
         
         if(files.length !== 0){
             setIsUpload(true);
+            setType(files[0].type);
+            fileRead(files[0]); //캔버스 생성
         }else{
-            console.log("이미지 파일이 없음")
+            console.log("Check your file!")
         }
-        setType(files[0].type);
-        fileRead(files[0]); //캔버스 생성
+        
 
     }
 
