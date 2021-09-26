@@ -71,7 +71,7 @@ const Header = () => {
         <>
         <HeaderStyled>
             <div className="header-wrap">
-                <img src={logo} alt="logo" /><h1>Tiny Image</h1>
+                <img src={logo} alt="logo" /><h1>Tiny IMG</h1>
             </div>
             <MobileMenu onClick={clickMobileMenu}>
                 <box-icon className="menuBtn" name='menu' color="#ffffff"/>
