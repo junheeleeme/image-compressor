@@ -42,14 +42,11 @@ export default function Resize(){
     const onChangeInput = (e) => { 
     
         const files = e.target.files;
-
         if(files.length !== 0){
             startResize(files);
         }else{
             console.log("이미지 파일이 없음")
         }
-        setType(files[0].type);
-        fileRead(files[0]); //캔버스 생성
 
     }
 
@@ -244,6 +241,21 @@ const ResizeStyled = styled.div`
     position: relative; display: block;
     height: calc(100vh - 120px);
     display: flex; justify-content: center; align-items: center;
+    @media screen and (max-width: 768px){
+        display: block;
+        height: auto;
+        padding: 10px;
+        & section{
+            display: inline-block; width: 100%; min-height: 100px;
+        }
+        & section:first-child{
+            padding: 60px 10px;
+            text-align: center;
+        }
+        & section:last-child{
+            height: 300px;
+        }
+    }
 `
 const ImageStyled = styled.section`
     position: relative; display: inline-block; width: 70%; height: 100%;
@@ -259,6 +271,10 @@ const CanvasWrap = styled.span`
         content: '${props=> props.height}'; position: absolute; top: 50%; left: -55px; transform: translate(0, -50%); 
     }
     & canvas{ width: 100%; height: 100% }
+    @media screen and (max-width: 768px){
+        position: relative; top: auto; left: auto; transform: none;
+        width: 62%;
+    }
 `
 const SettingStyled = styled.section`
     display: inline-block; width: 30%; height: 100%; padding: 15px; position: relative;
@@ -269,7 +285,7 @@ const SettingStyled = styled.section`
     .fileName{display:inline-block; width: auto; } 
     p input[type='number']{ width: 70px; outline: 0; font-size: 15px; padding:3px; margin-left: 5px; text-align:right; }
     button{ 
-        position: absolute; width: 42%; padding: 5px 0; font-size: 15px; cursor: pointer; 
+        position: absolute; width: 43%; padding: 5px 0; font-size: 15px; cursor: pointer; 
         border: none;    
     }
 `
