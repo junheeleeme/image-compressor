@@ -74,7 +74,7 @@ const Header = () => {
         <HeaderStyled>
             <div className="header-wrap">
                 <a href="/">
-                    <img src={logo} alt="logo" /><h1>Tiny IMG</h1>
+                    <img src={logo} alt="logo" /><h1>TinyIMG</h1>
                 </a>
             </div>
             <MobileMenu onClick={clickMobileMenu}>

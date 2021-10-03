@@ -11,13 +11,16 @@ export default function Resize(){
     const [height, setHeight] = useState(0);
     const [viewWH, setViewWH] = useState(['', '']);
     const [type, setType] = useState('');
+    const [isDone, setIsDone] = useState(false);
+    const [fileName, setFileName] = useState('');
+    const [fileSize, setFileSize] = useState('');
     const canvasEle = useRef(null); //사이즈 조절 때 사용
     const inputEle = useRef(null);
     const dragArea = useRef(null);
     const widthEle = useRef(null);
     const heightEle = useRef(null);
 
-    const preventDefaults = (e) => { //이벤트 방지
+    const preventDefaults = (e) => { //다른 이벤트 방지
         e.preventDefault();
         e.stopPropagation();
     }
@@ -39,10 +42,9 @@ export default function Resize(){
     const onChangeInput = (e) => { 
     
         const files = e.target.files;
-        const fileList = [];
 
         if(files.length !== 0){
-            setIsUpload(true);
+            startResize(files);
         }else{
             console.log("이미지 파일이 없음")
         }
@@ -51,7 +53,7 @@ export default function Resize(){
 
     }
 
-    const DropFile = async(e) => { //드래그 드랍 파일
+    const DropFile = async(e) => { //드래그 드랍 이벤트
         
         preventDefaults(e);
         dragArea.current.classList.remove('highlight');
@@ -69,14 +71,20 @@ export default function Resize(){
         });
         
         if(files.length !== 0){
-            setIsUpload(true);
-            setType(files[0].type);
-            fileRead(files[0]); //캔버스 생성
+            startResize(files);
         }else{
-            console.log("Check your file!")
+            console.log("Check your file!");
+            alert("Check your file!");
         }
         
+    }
 
+    const startResize = (files) =>{ //
+        setIsUpload(true);
+        setType(files[0].type);
+        setFileName(files[0].name);
+        fileRead(files[0]); //캔버스 이미지 생성
+        setFileSize(getfileSize(files[0].size));
     }
 
     const getfileSize = (byte) => { //파일 사이즈 표현
@@ -85,7 +93,7 @@ export default function Resize(){
         return (byte / Math.pow(1024, size)).toFixed(2) + " " + exp[size];
     };
 
-    const fileRead = (file) => {
+    const fileRead = (file) => { //이미지 읽기 후 캔버스에 삽입
 
         const reader = new FileReader();
         const image = new Image();
@@ -101,11 +109,9 @@ export default function Resize(){
     }
 
     const drawCanvas = (image, getWidth, getHeight) => { //캔버스에 이미지 삽입
-        
         const ctx = canvasEle.current.getContext('2d');
 
         if(getWidth === undefined && getHeight === undefined){
-
             const _width = image.width;
             const _height = image.height;
 
@@ -116,9 +122,7 @@ export default function Resize(){
             setHeight(_height); //수정될 height값
             setWidthHeight(_width, _height); //초기 input값         
             setViewWH([_width + 'px', _height  + 'px']);
-
         }else{
-
             canvasEle.current.width = getWidth;
             canvasEle.current.height = getHeight;
             ctx.drawImage(image, 0, 0, getWidth, getHeight);
@@ -127,26 +131,34 @@ export default function Resize(){
             setWidthHeight(getWidth, getHeight); //초기 input값         
             setViewWH([getWidth + 'px', getHeight  + 'px']);
         }
-
     }
 
     const reSizing = () => {
+        const chkWH = [width + 'px', height + 'px'];
+        console.log(viewWH);
+        console.log(chkWH)
+        if(viewWH[0] === chkWH[0] && viewWH[1] === chkWH[1]){ //사이즈 변경이 있을 때
+            console.log("사이즈 변경 없음");
+        }else{
+            const image = new Image();
+            const url = canvasEle.current.toDataURL(type);
 
-        const image = new Image();
-        const url = canvasEle.current.toDataURL(type);
-
-        image.src = url;
-        image.onload = () => {
-
-        drawCanvas(image, width, height);
-            
+            image.src = url;
+            image.onload = () => {
+                drawCanvas(image, width, height);
+                canvasEle.current.toBlob(res=>{ //리사이징 후 이미지 파일크기 다시 계산
+                    setFileSize(getfileSize(res.size));
+                    setIsDone(true); //리사이징 완료처리
+                }, type);
+            }
+            console.log("사이즈 변경 있음");
         }
     }
 
     const saveImage = () => {
         canvasEle.current.toBlob(res=>{
             const aTag = document.createElement('a');
-            aTag.download = "resized.jpeg";
+            aTag.download = fileName + "_resized.jpeg";
             aTag.href = URL.createObjectURL(res);
             aTag.click();
         }, type);
@@ -154,12 +166,10 @@ export default function Resize(){
 
     const onChangeWidth_Ele = (e) => {
         setWidth(Number(e.target.value));
-        console.log(width)
     }
 
     const onChangeHeight_Ele = (e) => {
         setHeight(Number(e.target.value));
-        console.log(height)
     }
 
     const setWidthHeight = (w, h) =>{
@@ -169,10 +179,13 @@ export default function Resize(){
 
     const allClear = () => { //업로드된 사진 삭제
         setIsUpload(false);
-        setWidth();
-        setHeight();
+        setIsDone(false);
+        setWidth('');
+        setHeight('');
         setViewWH(['', '']);
         setType('');
+        setFileName('');
+        setFileSize('');
     }
 
     return(
@@ -199,17 +212,27 @@ export default function Resize(){
                     <CanvasWrap width={viewWH[0]} height={viewWH[1]}><canvas ref={canvasEle}/></CanvasWrap>
                 </ImageStyled>
                 <SettingStyled>
-                        <p>
-                            <span>너비(px) : </span><input ref={widthEle} onChange={onChangeWidth_Ele} min={0} type="number"/>
-                        </p>
-                        <p>
-                            <span>높이(px) : </span><input ref={heightEle} onChange={onChangeHeight_Ele} min={0} type="number"/>
-                        </p>
-                        <p>
-                            <button onClick={allClear}>Back</button>
-                            <button onClick={reSizing}>Resize</button>
-                            <button onClick={saveImage}>Save</button>
-                        </p>
+                    <p title={fileName}>
+                        <span>File Name : </span>{fileName}
+                    </p>
+                    <p>
+                    <span>File Size : </span>{fileSize}
+                    </p>
+                    <p>
+                        <span>width(px) : </span><input ref={widthEle} onChange={onChangeWidth_Ele} min={0} type="number"/>
+                    </p>
+                    <p>
+                        <span>height(px) : </span><input ref={heightEle} onChange={onChangeHeight_Ele} min={0} type="number"/>
+                    </p>
+                    <BackBtnStyled onClick={allClear}>Home</BackBtnStyled>
+                    {
+                        !isDone 
+                            ?
+                        <ResizeBtnStyled onClick={reSizing}>Resize</ResizeBtnStyled>
+                            :
+                        <SaveBtnStyled onClick={saveImage}>Save</SaveBtnStyled>
+                    }
+                            
                 </SettingStyled>
             </ResizeStyled>
         }
@@ -228,7 +251,7 @@ const ImageStyled = styled.section`
 `
 const CanvasWrap = styled.span`
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80%; display: inline-block; color: #fff; font-size: 14px;
+    width: 75%; display: inline-block; color: #fff; font-size: 14px;
     &::after{ 
         content: '${props=> props.width}'; position: absolute; top: -35px; left: 50%; transform: translate(-50%, 0);  
     }
@@ -240,9 +263,28 @@ const CanvasWrap = styled.span`
 const SettingStyled = styled.section`
     display: inline-block; width: 30%; height: 100%; padding: 15px; position: relative;
     color: #fff; background-color: rgba(0,0,0,0.6); 
-    p{ padding: 10px 10px; }
-    p input[type='number']{ width: 70px; outline: 0; font-size: 15px; padding:3px; text-align:right; }
-    p button{ padding: 5px; }
+    & p:first-child{ white-space: nowrap; text-overflow: ellipsis; overflow: hidden; } 
+    & p{ position: relative; padding: 8px 0; }
+    p span{ display: inline-block; width: 80px;  font-size: 14px; }
+    .fileName{display:inline-block; width: auto; } 
+    p input[type='number']{ width: 70px; outline: 0; font-size: 15px; padding:3px; margin-left: 5px; text-align:right; }
+    button{ 
+        position: absolute; width: 42%; padding: 5px 0; font-size: 15px; cursor: pointer; 
+        border: none;    
+    }
+`
+
+const BackBtnStyled = styled.button`
+    bottom: 15px; left: 15px; 
+`
+const ResizeBtnStyled = styled.button`
+    bottom: 15px; right: 15px;
+`
+const SaveBtnStyled = styled.button`
+    bottom: 15px; right: 15px;
+    background-color: rgba(0,0,0,0.9);
+    color: #fff;
+    animation: done 1s;
 `
 const CompressorDrag = styled.section`
     position: relative; height: 500px; width: 100%;
