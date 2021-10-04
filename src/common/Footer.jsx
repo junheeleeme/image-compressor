@@ -12,7 +12,8 @@ const SpanStyled = styled.span`
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 19px;
     color: #fff;
 @media screen and (max-width: 486px){ font-size: 12px; }
 `
@@ -29,7 +30,12 @@ const Footer = () => {
 
     return(
         <FooterStyled>
-                <SpanStyled>Copyright © {year} juni-official All rights reserved.</SpanStyled>
+            
+                <SpanStyled>
+                    Contact Us : macjjuni@gmail.com<br/>    
+                    Copyright © {year} juni-official All rights reserved.
+                </SpanStyled>
+            
         </FooterStyled>
     )
 }

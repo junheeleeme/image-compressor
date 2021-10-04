@@ -221,7 +221,7 @@ export default function Resize(){
                     <p>
                         <span>height(px) : </span><input ref={heightEle} onChange={onChangeHeight_Ele} min={0} type="number"/>
                     </p>
-                    <BackBtnStyled onClick={allClear}>Home</BackBtnStyled>
+                    <BackBtnStyled onClick={allClear}>Clear</BackBtnStyled>
                     {
                         !isDone 
                             ?
