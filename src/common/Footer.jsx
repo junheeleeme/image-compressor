@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "boxicons"
 import styled from 'styled-components';
 
 const FooterStyled = styled.footer`
@@ -17,6 +18,21 @@ const SpanStyled = styled.span`
     color: #fff;
 @media screen and (max-width: 486px){ font-size: 12px; }
 `
+const QuestionBox = styled.div`
+    position: relative; display: inline-block; width: 20px; height: 20px; margin: 0 5px;
+    cursor: pointer;
+    &:after{ 
+        position: absolute; top: 50%; left: 30px; transform: translate(0, -50%);
+        width: 0; opacity: 0; content: '';  background-color: rgba(0,0,0, 0.3);
+        transition: 0.2s ease;
+    }
+    &:hover{ 
+        &:after{ width: auto; opacity: 1; padding: 5px 10px; content: 'macjjuni@gmail.com'; }
+    }
+
+    }
+    
+`
 
 const Footer = () => {
 
@@ -32,8 +48,10 @@ const Footer = () => {
         <FooterStyled>
             
                 <SpanStyled>
-                    Contact Us : macjjuni@gmail.com<br/>    
                     Copyright © {year} juni-official All rights reserved.
+                    <QuestionBox>
+                        ✉️
+                    </QuestionBox>
                 </SpanStyled>
             
         </FooterStyled>
