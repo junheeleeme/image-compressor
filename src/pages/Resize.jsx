@@ -132,8 +132,8 @@ export default function Resize(){
 
     const reSizing = () => {
         const chkWH = [width + 'px', height + 'px'];
-        console.log(viewWH);
-        console.log(chkWH)
+        
+        
         if(viewWH[0] === chkWH[0] && viewWH[1] === chkWH[1]){ //사이즈 변경이 있을 때
             console.log("사이즈 변경 없음");
         }else{
@@ -148,14 +148,13 @@ export default function Resize(){
                     setIsDone(true); //리사이징 완료처리
                 }, type);
             }
-            console.log("사이즈 변경 있음");
         }
     }
 
     const saveImage = () => {
         canvasEle.current.toBlob(res=>{
             const aTag = document.createElement('a');
-            aTag.download = fileName + "_resized.jpeg";
+            aTag.download = fileName + "_resized." + type.substr(6, 5);
             aTag.href = URL.createObjectURL(res);
             aTag.click();
         }, type);
