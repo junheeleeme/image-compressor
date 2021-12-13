@@ -27,6 +27,8 @@ export default function WebpConverter(){
     const [blobImg, setBlobImg] = useState([]);  // 이미지 blob 데이터
     const [isAllDown, setIsAllDown] = useState(false); // true : 이미지 변환 후 전체 다운로드 표시
     const [quality, setQuality] = useState(0.7); // webp 변환 퀄리티
+    
+    const alertBox = useRef(null);
     const inputEle = useRef(null);
     const dragArea = useRef(null);
     const alldownBtn = useRef(null);
@@ -215,6 +217,10 @@ export default function WebpConverter(){
         });
     }
 
+    const hideAlert = () => {
+        alertBox.current.style.display = 'none';
+    }
+
     return(
         <>
             <Main>
@@ -225,6 +231,12 @@ export default function WebpConverter(){
                 }
                 <input ref={inputEle} type="file" id="fileInput" accept="image/png, image/jpg, image/jpeg, image/webp, image/gif," style={{display: 'none'}} multiple onChange={onChangeInput}/>
                 <CompressorWrap>
+                    <AlertDiv ref={alertBox}>
+                        <div>
+                            <p>Convert to webp is only supported in Chrome browsers.</p>
+                        </div>
+                        <button onClick={hideAlert}>Confirm</button>
+                    </AlertDiv>
                     <CompressorDrag>
                         <Alert/>
                         <QualityStyled>
@@ -392,4 +404,49 @@ const QualityStyled = styled.div`
     padding: 5px; z-index: 1000;
     & input[type='checkbox']{ display: inline-block; width: 16px; height: 16px; vertical-align: top; margin: 4px 5px 0 0;  }
     & span{ color: #fff; font-size: 15px; vertical-align: top; }
+`
+
+const AlertDiv = styled.div`
+    position: fixed; top: 45%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px; height: 220px;
+    padding: 90px 20px 20px 20px;
+    background-color: #EDD2F3;
+    border-radius: 10px;
+    z-index: 9998;
+    &:after{
+        content: '!';
+        position: absolute; top: 15px; left: 50%;
+        transform: translate(-50%, 0);
+        width: 50px; height: 50px; border-radius: 50%;
+        border: 6px solid #c35cda;
+        font-size: 32px; 
+        font-weight: bold;
+        text-align: center;
+        color: #c35cda;
+        background-color: #fff;
+    } 
+    &>div{
+        display: inline-block;
+        width: 100%;
+
+    }
+    &>div>p{
+        font-size: 16px;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    &>button{
+        position: absolute; bottom: 20px; left: 20px;
+        width: calc(100% - 40px); height: 40px;
+        font-size: 17px;
+        vertical-align: bottom;
+        border: none; cursor: pointer;
+        background-color: #fff;
+        transition: 0.2s ease;
+        font-family: 'Noto Sans KR', sans-serif;
+        &:hover{
+            background-color: #d992e9;
+            color: #fff;
+        }
+    }
 `

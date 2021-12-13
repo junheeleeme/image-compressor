@@ -24,13 +24,15 @@ const QuestionBox = styled.div`
     &:after{ 
         position: absolute; top: 50%; left: 30px; transform: translate(0, -50%);
         width: 0; opacity: 0; content: '';  background-color: rgba(0,0,0, 0.3);
-        transition: 0.2s ease;
     }
     &:hover{ 
         &:after{ width: auto; opacity: 1; padding: 5px 10px; content: 'macjjuni@gmail.com'; }
     }
-
+@media screen and (max-width: 600px){
+    &:after{
+        top: -20px; left: -90px;
     }
+}
     
 `
 

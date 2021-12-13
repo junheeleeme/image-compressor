@@ -37,7 +37,7 @@ const Alert = () => {
             <AlertStyled>
                 <box-icon name='error-circle' color='#ffffff' ></box-icon>
             </AlertStyled> 
-            <MessageBox className="alertMsg">The selected image is not sent to the server, So you don't have to worry about Privacy.</MessageBox>
+            <MessageBox className="alertMsg">Selected images is not sent to the server, So you don't have to worry about Privacy.</MessageBox>
         </>
     )
 }
