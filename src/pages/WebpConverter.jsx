@@ -410,43 +410,30 @@ const AlertDiv = styled.div`
     position: fixed; top: 45%; left: 50%;
     transform: translate(-50%, -50%);
     width: 350px; height: 220px;
-    padding: 90px 20px 20px 20px;
-    background-color: #EDD2F3;
+    padding: 85px 20px 20px 20px;
+    background-color: #fff;
     border-radius: 10px;
     z-index: 9998;
-    &:after{
-        content: '!';
-        position: absolute; top: 15px; left: 50%;
-        transform: translate(-50%, 0);
-        width: 50px; height: 50px; border-radius: 50%;
-        border: 6px solid #c35cda;
-        font-size: 32px; 
-        font-weight: bold;
-        text-align: center;
-        color: #c35cda;
-        background-color: #fff;
-    } 
-    &>div{
-        display: inline-block;
-        width: 100%;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 
-    }
-    &>div>p{
-        font-size: 16px;
-        font-family: 'Noto Sans KR', sans-serif;
-    }
-    &>button{
-        position: absolute; bottom: 20px; left: 20px;
-        width: calc(100% - 40px); height: 40px;
-        font-size: 17px;
-        vertical-align: bottom;
-        border: none; cursor: pointer;
-        background-color: #fff;
-        transition: 0.2s ease;
-        font-family: 'Noto Sans KR', sans-serif;
-        &:hover{
-            background-color: #d992e9;
-            color: #fff;
+        &:after{
+            content: '';
+            position: absolute; top: 15px; left: 50%;
+            transform: translate(-50%, 0);
+            width: 55px; height: 55px;
+            background: url('/static/media/logo.06f29f67.png') no-repeat center/100%;
+            background-color: #fff;
+        } 
+        &>div{ display: inline-block; width: 100%; }
+        &>div>p{ font-size: 16px; font-family: 'Noto Sans KR', sans-serif; }
+        &>button{
+            position: absolute; bottom: 20px; left: 20px;
+            width: calc(100% - 40px); height: 40px;
+            font-size: 17px; vertical-align: bottom; color: #fff;
+            border: none; cursor: pointer; background-color: #979797;
+            transition: background-color 0.3s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+            
+            &:hover{ background-color: #d992e9; }
         }
-    }
 `

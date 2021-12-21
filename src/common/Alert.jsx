@@ -4,7 +4,7 @@ import 'boxicons'
 
 const AlertStyled = styled.div`
     position: absolute; top: 15px; right: 15px; border-radius: 17.5px; width: 35px; height: 35px; 
-    background-color:rgba(0,0,0, 0.4); transition: 0.45s ease;  z-index: 9998;
+    background-color:rgba(0, 0, 0, 0.4); transition: 0.45s ease;  z-index: 9998;
     @media screen and (max-width: 600px){
         top: 10px; right: 10px; border-radius: 17.5px; width: 35px; height: 35px; 
     }
