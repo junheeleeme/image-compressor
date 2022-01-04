@@ -430,7 +430,7 @@ const AlertDiv = styled.div`
             position: absolute; bottom: 20px; left: 20px;
             width: calc(100% - 40px); height: 40px;
             font-size: 17px; vertical-align: bottom; color: #fff;
-            border: none; cursor: pointer; background-color: #979797;
+            border: none; cursor: pointer; background-color: #979797; border-radius: 5px;
             transition: background-color 0.3s ease;
             font-family: 'Noto Sans KR', sans-serif;
             

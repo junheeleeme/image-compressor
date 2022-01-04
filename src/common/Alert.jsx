@@ -2,6 +2,19 @@ import React from 'react'
 import styled from 'styled-components';
 import 'boxicons'
 
+
+const Alert = () => {
+    
+    return(
+        <> 
+            <AlertStyled>
+                <box-icon name='error-circle' color='#ffffff' ></box-icon>
+            </AlertStyled> 
+            <MessageBox className="alertMsg">Selected images is not sent to the server, So you don't have to worry about Privacy.</MessageBox>
+        </>
+    )
+}
+
 const AlertStyled = styled.div`
     position: absolute; top: 15px; right: 15px; border-radius: 17.5px; width: 35px; height: 35px; 
     background-color:rgba(0, 0, 0, 0.4); transition: 0.45s ease;  z-index: 9998;
@@ -27,19 +40,5 @@ const MessageBox = styled.div`
         top: -3px; right: 65px; width: 260px;
         &::after{ top: 18px; }
     }`
-
-    
-
-const Alert = () => {
-    
-    return(
-        <> 
-            <AlertStyled>
-                <box-icon name='error-circle' color='#ffffff' ></box-icon>
-            </AlertStyled> 
-            <MessageBox className="alertMsg">Selected images is not sent to the server, So you don't have to worry about Privacy.</MessageBox>
-        </>
-    )
-}
 
 export default Alert;
