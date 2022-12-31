@@ -1,6 +1,23 @@
 # • TinyImg [🔗 Link](https://tinyimg.web.app/)
 
 <br>
+<br>
+
+<div align="center">
+	<img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=JavaScript&logoColor=white" />
+<img src="https://img.shields.io/badge/Styled Components-DB7093?style=flat&logo=Styled-Components&logoColor=white" />
+<img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=Firebase&logoColor=white" />
+
+</div>
+
+<br>
+<br>
+<br>
+
+## 📸 스크린샷
+
+<br>
 
 <div align="center">
 
@@ -8,6 +25,7 @@
 
 </div>
 
+<br>
 <br>
 
 ## 💁🏻‍♂️ 기능
